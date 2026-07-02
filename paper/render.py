@@ -14,9 +14,9 @@ from rich.rule import Rule
 from rich.table import Table
 from rich.text import Text
 
+from .config import DEFAULT_MASTHEAD
 from .models import Edition
 
-DEFAULT_MASTHEAD = "THE SAYANTAN TIMES"
 _WIDTH = 96
 
 
