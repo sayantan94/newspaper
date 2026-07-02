@@ -1,0 +1,12 @@
+{"type":"last-prompt","leafUuid":"aaa","sessionId":"s1"}
+{"type":"user","isSidechain":false,"cwd":"/Users/dev/Workspace/x-lens","timestamp":"2026-06-30T18:00:00.000Z","message":{"role":"user","content":"add a parser for lens files"}}
+{"type":"user","isSidechain":false,"cwd":"/Users/dev/Workspace/x-lens","timestamp":"2026-06-30T18:05:00.000Z","message":{"role":"user","content":[{"type":"text","text":"also fix the unicode bug"}]}}
+{"type":"user","isSidechain":false,"cwd":"/Users/dev/Workspace/x-lens","timestamp":"2026-06-30T18:06:00.000Z","message":{"role":"user","content":"<local-command-caveat>Caveat: local commands</local-command-caveat>"}}
+{"type":"user","isSidechain":true,"cwd":"/Users/dev/Workspace/x-lens","timestamp":"2026-06-30T18:07:00.000Z","message":{"role":"user","content":"sidechain prompt should be skipped"}}
+{"type":"user","isSidechain":false,"isMeta":true,"cwd":"/Users/dev/Workspace/x-lens","timestamp":"2026-06-30T18:08:00.000Z","message":{"role":"user","content":"meta line should be skipped"}}
+{"type":"assistant","isSidechain":false,"cwd":"/Users/dev/Workspace/x-lens","timestamp":"2026-06-30T18:10:00.000Z","message":{"role":"assistant","content":[{"type":"thinking","thinking":"hmm"}]}}
+{"type":"assistant","isSidechain":false,"cwd":"/Users/dev/Workspace/x-lens","timestamp":"2026-06-30T18:20:00.000Z","message":{"role":"assistant","content":[{"type":"tool_use","name":"Edit","input":{"file_path":"/Users/dev/Workspace/x-lens/parser.py","old_string":"a","new_string":"b"}}]}}
+{"type":"assistant","isSidechain":false,"cwd":"/Users/dev/Workspace/x-lens","timestamp":"2026-06-30T18:25:00.000Z","message":{"role":"assistant","content":[{"type":"tool_use","name":"Write","input":{"file_path":"/Users/dev/Workspace/x-lens/test_parser.py","content":"..."}}]}}
+{"type":"assistant","isSidechain":false,"cwd":"/Users/dev/Workspace/x-lens","timestamp":"2026-06-30T18:30:00.000Z","message":{"role":"assistant","content":[{"type":"text","text":"I added the parser and fixed the unicode bug. Tests pass."}]}}
+{"type":"user","isSidechain":false,"cwd":"/Users/dev/Workspace/x-lens","timestamp":"2026-06-25T18:00:00.000Z","message":{"role":"user","content":"old prompt from another day"}}
+not json {{{
