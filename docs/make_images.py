@@ -26,7 +26,7 @@ DEMO = Edition(
         "still mid-fix on its rate-limit bug, and the streaming refactor you "
         "started is one test away from mergeable. Today writes itself."
     ),
-    calendar=["9:30 AM  Standup", "12:30 PM  Lunch with Priya", "6:00 PM  Rooftop BBQ"],
+    calendar=["9:30 AM  Standup", "12:30 PM  Lunch with Jeff", "6:00 PM  Rooftop BBQ"],
     inbox=[
         "PyCon — Your talk 'Newspapers for Robots' was accepted 🎉",
         "GitHub — [orbit-cam] nightly build failed on main",
