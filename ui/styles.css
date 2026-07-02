@@ -193,36 +193,6 @@ body {
 }
 .gh:hover { text-decoration: underline; }
 
-/* ── by the numbers ── */
-.numbers { margin-top: 40px; }
-.numbers-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  padding: 18px 0;
-}
-.stat {
-  padding: 0 16px;
-  border-left: 1px solid rgba(28,23,18,.28);
-  text-align: center;
-}
-.stat:first-child { border-left: 0; }
-.stat b {
-  display: block;
-  font-family: var(--serif-display);
-  font-weight: 900;
-  font-size: clamp(2.2rem, 4.5vw, 3.4rem);
-  line-height: 1;
-}
-.stat b i { font-size: .5em; font-style: normal; }
-.stat span {
-  display: block;
-  margin-top: 6px;
-  font-size: .8rem;
-  font-style: italic;
-  color: var(--ink-soft);
-  line-height: 1.35;
-}
-
 /* ── dinkus ── */
 .dinkus {
   text-align: center;
