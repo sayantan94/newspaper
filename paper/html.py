@@ -73,6 +73,12 @@ def render_html(edition: Edition, masthead: str) -> str:
     notices = " · ".join(escape(n) for n in edition.notices)
 
     sections = []
+    if edition.calendar:
+        sections.append(
+            f"<div class='section'><h2>Today's calendar</h2>{_items(edition.calendar)}</div>"
+        )
+    if edition.inbox:
+        sections.append(f"<div class='section'><h2>The mailbag</h2>{_items(edition.inbox)}</div>")
     if yesterday:
         sections.append(
             f"<div class='section'><h2>Yesterday — where you left off</h2><ul>{yesterday}</ul></div>"
@@ -85,14 +91,8 @@ def render_html(edition: Edition, masthead: str) -> str:
         sections.append(f"<div class='section'><h2>Tech wire</h2><ul>{wire}</ul></div>")
     if edition.github:
         sections.append(f"<div class='section'><h2>GitHub</h2>{_items(edition.github)}</div>")
-    if edition.inbox:
-        sections.append(f"<div class='section'><h2>The mailbag</h2>{_items(edition.inbox)}</div>")
     if edition.sports:
         sections.append(f"<div class='section'><h2>The sports page</h2>{_items(edition.sports)}</div>")
-    if edition.calendar:
-        sections.append(
-            f"<div class='section'><h2>Today's calendar</h2>{_items(edition.calendar)}</div>"
-        )
     if actions:
         sections.append(
             f"<div class='section'><h2>Today's top three</h2><ol class='actions'>{actions}</ol></div>"

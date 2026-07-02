@@ -108,6 +108,22 @@ def render_edition(
     console.print(Align.center(Text("❦", style="dim")))
     console.print()
 
+    # ── Today's calendar (top of the fold) ─────────────────────
+    if edition.calendar:
+        console.print(_kicker("Today's Calendar", "the forward desk"))
+        for line in edition.calendar:
+            console.print(Text(f"  {line}"))
+        console.print()
+
+    # ── The mailbag (top of the fold) ──────────────────────────
+    if edition.inbox:
+        console.print(_kicker("The Mailbag", "unread & worth your attention"))
+        for line in edition.inbox:
+            item = Text("  ✉ ", style="dim")
+            item.append(line)
+            console.print(item)
+        console.print()
+
     # ── Yesterday ──────────────────────────────────────────────
     if edition.yesterday:
         console.print(_kicker("Yesterday", "where you left off"))
@@ -154,15 +170,6 @@ def render_edition(
         console.print(columns)
         console.print()
 
-    # ── The mailbag ────────────────────────────────────────────
-    if edition.inbox:
-        console.print(_kicker("The Mailbag", "unread & worth your attention"))
-        for line in edition.inbox:
-            item = Text("  ✉ ", style="dim")
-            item.append(line)
-            console.print(item)
-        console.print()
-
     # ── Sports page ────────────────────────────────────────────
     if edition.sports:
         console.print(_kicker("The Sports Page", "results & headlines"))
@@ -172,13 +179,9 @@ def render_edition(
             console.print(item)
         console.print()
 
-    # ── Today ──────────────────────────────────────────────────
-    if edition.calendar or edition.actions:
-        console.print(_kicker("Today", "the forward desk"))
-        for line in edition.calendar:
-            console.print(Text(f"  {line}"))
-        if edition.calendar and edition.actions:
-            console.print()
+    # ── The top three ──────────────────────────────────────────
+    if edition.actions:
+        console.print(_kicker("The Top Three", "do these today"))
         for i, action in enumerate(edition.actions, 1):
             item = Text(f"  {i}. ", style="dim")
             item.append(action, style="bold")
@@ -204,6 +207,12 @@ def _render_plain(edition: Edition, masthead: str) -> None:
         out.append(edition.lead)
     if edition.fallback:
         out.append("(raw edition — editorial unavailable)")
+    if edition.calendar:
+        out.append("\n## Today's calendar")
+        out += [f"- {line}" for line in edition.calendar]
+    if edition.inbox:
+        out.append("\n## The mailbag")
+        out += [f"- {line}" for line in edition.inbox]
     if edition.yesterday:
         out.append("\n## Yesterday")
         out += [f"- {e.get('project', '')}: {e.get('story', '')}" for e in edition.yesterday]
@@ -216,15 +225,11 @@ def _render_plain(edition: Edition, masthead: str) -> None:
     if edition.github:
         out.append("\n## GitHub")
         out += [f"- {line}" for line in edition.github]
-    if edition.inbox:
-        out.append("\n## Inbox")
-        out += [f"- {line}" for line in edition.inbox]
     if edition.sports:
         out.append("\n## Sports")
         out += [f"- {line}" for line in edition.sports]
-    if edition.calendar or edition.actions:
-        out.append("\n## Today")
-        out += [f"- {line}" for line in edition.calendar]
+    if edition.actions:
+        out.append("\n## The top three")
         out += [f"{i}. {a}" for i, a in enumerate(edition.actions, 1)]
     out += [f"({n})" for n in edition.notices]
     print("\n".join(out))
