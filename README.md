@@ -170,20 +170,47 @@ ics_url = ""                                  # Google Calendar's secret iCal ad
 location = "Seattle"
 ```
 
-**Google account access, the low-friction way.** One command, no Google Cloud
-project, no OAuth consent screens, no extra tools:
+### Connecting your Google account (Gmail + Calendar)
+
+One command, no Google Cloud project, no OAuth consent screens, no extra tools:
 
 ```bash
 paper auth gmail
 ```
 
-It asks for two things and stores both in your macOS Keychain:
+It asks for two things and stores both in your macOS Keychain: a Gmail **app
+password** (powers **THE MAILBAG**) and your calendar's **secret iCal address**
+(powers **TODAY'S CALENDAR**). Here's the full walkthrough:
 
-- an **app password** ([myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords),
-  needs 2FA) — your top unread mail becomes **THE MAILBAG**
-- your calendar's **secret iCal address** (Google Calendar → Settings → your
-  calendar → *Secret address in iCal format*) — today's events become
-  **TODAY'S CALENDAR**
+**0. Be in the right Google account.** The settings pages below act on
+whichever account is active — check the avatar in the top-right corner and
+switch first if you use multiple accounts.
+
+**1. Turn on 2-Step Verification** (app passwords don't exist without it):
+go to <https://myaccount.google.com/signinoptions/twosv>, click **Turn on
+2-Step Verification**, and finish the prompts. Already on? Skip ahead.
+
+**2. Create the app password:** go to
+<https://myaccount.google.com/apppasswords> (it may ask you to sign in again),
+type `paper` in the **App name** box, click **Create**, and copy the
+**16-character code** from the yellow box — it's shown only once.
+This is *not* your normal Gmail password; Google rejects normal passwords
+over IMAP.
+
+**3. Get the calendar URL:** open <https://calendar.google.com> → gear icon →
+**Settings** → click your calendar in the left sidebar → **Integrate
+calendar** → copy **"Secret address in iCal format"**.
+
+**4. Run `paper auth gmail`** — enter your address, paste the 16-character
+code at the hidden prompt (spaces are fine, they're stripped), then paste the
+calendar URL. It test-drives both before saving anything, so a ✓ means it
+works. Then `paper --refresh` to see both sections live.
+
+Gotchas: "Invalid credentials" means a normal password was used instead of an
+app password, or the app password was created under a *different* Google
+account than the address you typed (the multi-account trap). The app password
+will never appear under "linked apps / third-party connections" — that page
+only lists OAuth apps; yours lives at the App passwords page.
 
 All state lives under `~/.paper/` (override with `$PAPER_HOME`):
 `ledger/` (your journal), `editions/` (each day's paper + HTML + PDF),
