@@ -55,8 +55,11 @@ def _first_run(console: Console) -> None:
 
 def _ingest_pending(config, store, editor, console: Console, verbose: bool) -> None:
     pending = unprocessed_dates(store, config, dt.date.today())
-    for date in pending:
-        with console.status(f"[dim]reading your {date:%A} …[/dim]"):
+    for i, date in enumerate(pending, 1):
+        label = f"catching up on {date:%A, %b} {date.day}"
+        if len(pending) > 1:
+            label += f"  ({i}/{len(pending)})"
+        with console.status(f"[dim]{label} …[/dim]"):
             day = ingest_date(date, config, store, editor, verbose=verbose)
         if day.projects and verbose:
             console.print(f"[dim]  journaled {date}: {len(day.projects)} project(s)[/dim]")
