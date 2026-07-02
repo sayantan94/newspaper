@@ -1,5 +1,6 @@
 from rich.console import Console
 
+from paper.config import DEFAULT_MASTHEAD
 from paper.models import Edition
 from paper.render import render_edition
 
@@ -24,7 +25,7 @@ def test_render_rich_contains_key_content():
     console = Console(record=True, width=96, force_terminal=True)
     render_edition(sample_edition(), console=console)
     text = console.export_text()
-    assert "THE SAYANTAN TIMES" in text
+    assert DEFAULT_MASTHEAD in text
     assert "Wednesday, July 1, 2026" in text
     assert "x-lens" in text
     assert "OPEN LOOPS" in text
@@ -52,4 +53,4 @@ def test_render_fallback_note():
 def test_render_empty_edition_does_not_crash():
     console = Console(record=True, width=96, force_terminal=True)
     render_edition(Edition(date="2026-07-01"), console=console)
-    assert "THE SAYANTAN TIMES" in console.export_text()
+    assert DEFAULT_MASTHEAD in console.export_text()
