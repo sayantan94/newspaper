@@ -1,0 +1,22 @@
+[project]
+name = "paper-digest"
+version = "0.1.0"
+description = "Personal daily digest — a morning newspaper in your terminal"
+requires-python = ">=3.11"
+dependencies = ["rich>=13"]
+
+[project.scripts]
+paper = "paper.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["paper"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
