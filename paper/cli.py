@@ -77,8 +77,40 @@ def _ingest_pending(config, store, editor, console: Console, verbose: bool) -> N
 
 
 def _get_edition(date: dt.date, config, store, editor, console, refresh=False, verbose=False):
-    with console.status("writing your edition (open loops · news · github · weather) …"):
-        return compose(date, config, store, editor, refresh=refresh, verbose=verbose)
+    quiet = not console.is_terminal
+    with console.status("checking today's edition …") as status:
+
+        def on_progress(event, payload):
+            if quiet:
+                return
+            if event == "cached":
+                status.update("today's edition, hot off the cache")
+            elif event == "gathering":
+                status.update(f"gathering {len(payload)} sections — open loops, news, github, sports, mail, weather, calendar …")
+            elif event == "section":
+                section = payload
+                label = (section.title or section.name).lower()
+                if section.items:
+                    console.print(f"  [green]✓[/green] {label} — {len(section.items)} item(s)")
+                elif section.notice:
+                    console.print(f"  [dim]· {label} — {section.notice}[/dim]")
+                else:
+                    console.print(f"  [dim]· {label} — quiet[/dim]")
+            elif event == "editorial":
+                status.update(
+                    "the editorial desk is writing your front page — headline, lead, and "
+                    "why-it-matters notes (takes a minute or two) …"
+                )
+            elif event == "editorial_done":
+                console.print("  [green]✓[/green] editorial written — going to print")
+            elif event == "editorial_fallback":
+                console.print(
+                    "  [yellow]·[/yellow] editorial desk unavailable — printing the raw feed instead"
+                )
+
+        return compose(
+            date, config, store, editor, refresh=refresh, verbose=verbose, on_progress=on_progress
+        )
 
 
 def _cmd_edition(args, config, store, editor, console) -> int:

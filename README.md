@@ -182,22 +182,22 @@ It asks for two things and stores both in your macOS Keychain: a Gmail **app
 password** (powers **THE MAILBAG**) and your calendar's **secret iCal address**
 (powers **TODAY'S CALENDAR**). Here's the full walkthrough:
 
-**0. Be in the right Google account.** The settings pages below act on
+**1. Be in the right Google account.** The settings pages below act on
 whichever account is active — check the avatar in the top-right corner and
 switch first if you use multiple accounts.
 
-**1. Turn on 2-Step Verification** (app passwords don't exist without it):
+**2. Turn on 2-Step Verification** (app passwords don't exist without it):
 go to <https://myaccount.google.com/signinoptions/twosv>, click **Turn on
 2-Step Verification**, and finish the prompts. Already on? Skip ahead.
 
-**2. Create the app password:** go to
+**3. Create the app password:** go to
 <https://myaccount.google.com/apppasswords> (it may ask you to sign in again),
 type `paper` in the **App name** box, click **Create**, and copy the
 **16-character code** from the yellow box — it's shown only once.
 This is *not* your normal Gmail password; Google rejects normal passwords
 over IMAP.
 
-**3. Get the calendar URL:** open <https://calendar.google.com> → gear icon →
+**4. Get the calendar URL:** open <https://calendar.google.com> → gear icon →
 **Settings** → click your calendar in the left sidebar → **Integrate
 calendar** → copy **"Secret address in iCal format"**.
 

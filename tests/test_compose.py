@@ -104,6 +104,34 @@ def test_failing_connector_becomes_notice_not_crash():
     assert any("markets" in n and "boom" in n for n in ed.notices)
 
 
+def test_progress_events_fire():
+    store = Store()
+    seed_ledger(store)
+    events = []
+    compose(
+        DATE,
+        PaperConfig(),
+        store,
+        FakeEditor(response=EDITORIAL),
+        section_conns=stub_connectors(),
+        on_progress=lambda e, p: events.append(e),
+    )
+    assert events[0] == "gathering"
+    assert events.count("section") == len(stub_connectors())
+    assert events[-2:] == ["editorial", "editorial_done"]
+    # cache hit emits a single "cached" event
+    events.clear()
+    compose(
+        DATE,
+        PaperConfig(),
+        store,
+        FakeEditor(response=EDITORIAL),
+        section_conns=stub_connectors(),
+        on_progress=lambda e, p: events.append(e),
+    )
+    assert events == ["cached"]
+
+
 def test_fallback_edition_when_editor_dies():
     store = Store()
     seed_ledger(store)

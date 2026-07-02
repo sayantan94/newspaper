@@ -63,7 +63,11 @@ def _ledger_days_for_edition(store: Store, date: dt.date) -> list[LedgerDay]:
     return list(reversed(days))
 
 
-def _fetch_sections(connectors, ctx) -> list[Section]:
+def _fetch_sections(connectors, ctx, on_progress=None) -> list[Section]:
+    def emit(event, payload=None):
+        if on_progress:
+            on_progress(event, payload)
+
     def run_one(connector) -> Section:
         ok, hint = connector.available()
         if not ok:
@@ -80,11 +84,11 @@ def _fetch_sections(connectors, ctx) -> list[Section]:
         futures = [(c, pool.submit(run_one, c)) for c in connectors]
         for connector, future in futures:
             try:
-                sections.append(future.result(timeout=connector.timeout + 2))
+                section = future.result(timeout=connector.timeout + 2)
             except Exception:
-                sections.append(
-                    Section(name=connector.name, title=connector.title, notice="timed out")
-                )
+                section = Section(name=connector.name, title=connector.title, notice="timed out")
+            emit("section", section)
+            sections.append(section)
     return sections
 
 
@@ -135,9 +139,15 @@ def compose(
     section_conns: list | None = None,
     refresh: bool = False,
     verbose: bool = False,
+    on_progress=None,
 ) -> Edition:
+    def emit(event, payload=None):
+        if on_progress:
+            on_progress(event, payload)
+
     cached = store.read_edition(date.isoformat())
     if cached and not refresh:
+        emit("cached", cached)
         return cached
 
     if section_conns is None:
@@ -157,7 +167,8 @@ def compose(
     ctx = PaperContext(
         config=config, date=date, recent_themes=themes, latest_ledger=latest, store=store
     )
-    sections = {s.name: s for s in _fetch_sections(section_conns, ctx)}
+    emit("gathering", [c.name for c in section_conns])
+    sections = {s.name: s for s in _fetch_sections(section_conns, ctx, on_progress)}
 
     openloops = sections.pop("openloops", Section(name="openloops", title="OPEN LOOPS"))
     weather = sections.pop("weather", None)
@@ -170,17 +181,20 @@ def compose(
         openloops_json=json.dumps(openloops.to_dict(), indent=1),
         sections_json=json.dumps({k: s.to_dict() for k, s in sections.items()}, indent=1),
     )
+    emit("editorial", None)
     raw = editor.complete_json(prompt)
     if raw:
         edition = Edition.from_dict(raw)
         edition.date = date.isoformat()
         edition.fallback = False
+        emit("editorial_done", edition)
     else:
         if verbose:
             print("  ! editorial unavailable, assembling raw edition")
         all_sections = dict(sections)
         all_sections["openloops"] = openloops
         edition = _fallback_edition(date, days, all_sections)
+        emit("editorial_fallback", edition)
 
     edition.weather = weather_line
     notices = []
