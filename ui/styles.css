@@ -253,11 +253,6 @@ body {
 @media (max-width: 620px) {
   body { font-size: 16px; }
   .ribbon { display: none; }
-  .numbers-grid { grid-template-columns: 1fr 1fr; row-gap: 18px; }
-  .stat { border-left: 0; }
   .sheet { margin: 0; padding: 24px 18px 40px; }
-  .columns { grid-template-columns: 1fr; }
-  .col { border-left: 0; padding: 0 0 4px; }
-  .col p + p { text-indent: 0; }
   .ears { font-size: .72rem; }
 }
