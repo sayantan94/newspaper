@@ -186,20 +186,22 @@ def test_weather_summary_and_geocode_cache(monkeypatch):
 
 # --- calendar ---
 
-def test_calendar_unavailable_hint(monkeypatch):
+def test_calendar_unconfigured_notice(monkeypatch):
     import paper.connectors.calendar_ as cal
 
-    monkeypatch.setattr(cal.shutil, "which", lambda name: None)
-    ok, hint = CalendarConnector().available()
-    assert not ok and "gcalcli" in hint
-
-
-def test_calendar_gcalcli_tsv(monkeypatch):
-    import paper.connectors.calendar_ as cal
-
-    monkeypatch.setattr(cal.shutil, "which", lambda name: "/usr/bin/gcalcli" if name == "gcalcli" else None)
-    tsv = "2026-07-01\t09:30\t2026-07-01\t10:00\tStandup\n2026-07-01\t14:00\t2026-07-01\t15:00\t1:1 with Sam\n"
-    monkeypatch.setattr(cal, "_run", lambda argv: tsv)
+    monkeypatch.setattr(cal, "get_secret", lambda service, account: "")
     section = CalendarConnector().fetch(ctx())
-    assert [i.title for i in section.items] == ["Standup", "1:1 with Sam"]
-    assert section.items[0].meta == "09:30"
+    assert "paper auth gmail" in section.notice
+
+
+def test_calendar_ics_url_from_config(monkeypatch):
+    import paper.connectors.calendar_ as cal
+
+    ics = (
+        "BEGIN:VCALENDAR\nBEGIN:VEVENT\nSUMMARY:Standup\n"
+        "DTSTART:20260701T163000Z\nEND:VEVENT\nEND:VCALENDAR\n"
+    )
+    monkeypatch.setattr(cal._http, "get_text", lambda url: ics)
+    cfg = PaperConfig(calendar_ics_url="https://calendar.google.com/secret.ics")
+    section = CalendarConnector().fetch(ctx(cfg=cfg))
+    assert [i.title for i in section.items] == ["Standup"]

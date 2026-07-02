@@ -6,6 +6,7 @@ import datetime as dt
 from html import escape
 
 from .models import Edition
+from .util import daypart
 
 _STYLE = """
 @page { size: letter; margin: 14mm; }
@@ -52,6 +53,7 @@ def render_html(edition: Edition, masthead: str) -> str:
     dateline = f"Vol. I · {escape(_pretty_date(edition.date))}"
     if edition.weather:
         dateline += f" · {escape(edition.weather)}"
+    dateline += f" · the {escape(daypart())} edition"
 
     yesterday = "".join(
         f"<li class='story'><b>{escape(e.get('project', ''))}</b> — {escape(e.get('story', ''))}</li>"
@@ -83,6 +85,10 @@ def render_html(edition: Edition, masthead: str) -> str:
         sections.append(f"<div class='section'><h2>Tech wire</h2><ul>{wire}</ul></div>")
     if edition.github:
         sections.append(f"<div class='section'><h2>GitHub</h2>{_items(edition.github)}</div>")
+    if edition.inbox:
+        sections.append(f"<div class='section'><h2>The mailbag</h2>{_items(edition.inbox)}</div>")
+    if edition.sports:
+        sections.append(f"<div class='section'><h2>The sports page</h2>{_items(edition.sports)}</div>")
     if edition.calendar:
         sections.append(
             f"<div class='section'><h2>Today's calendar</h2>{_items(edition.calendar)}</div>"

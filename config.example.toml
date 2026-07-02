@@ -15,7 +15,7 @@ lookback_days = 14
 markdown_mirror = ""
 
 [connectors]
-# Connector names to disable, e.g. ["calendar", "weather"]
+# Connector names to disable, e.g. ["calendar", "sports"]
 disabled = []
 
 [technews]
@@ -24,6 +24,21 @@ rss_feeds = [
   # "https://simonwillison.net/atom/everything/",
 ]
 hn_count = 15
+
+[sports]
+# "all", or any of: nba, wnba, nfl, mlb, nhl, epl, ucl, mls
+leagues = ["all"]
+
+[gmail]
+# Your Gmail address; run `paper auth gmail` to store an app password in the
+# macOS Keychain (create one at https://myaccount.google.com/apppasswords).
+# Empty = THE MAILBAG section stays off.
+address = ""
+
+[calendar]
+# Zero-OAuth Google Calendar: Settings → "Secret address in iCal format".
+# Easiest: run `paper auth gmail`, which asks for this and stores it securely.
+ics_url = ""
 
 [weather]
 location = "Seattle"

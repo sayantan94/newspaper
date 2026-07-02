@@ -9,18 +9,22 @@ from concurrent.futures import ThreadPoolExecutor
 from .config import PaperConfig
 from .models import Edition, LedgerDay, Section, SectionItem
 from .store import Store
+from .util import daypart
 
 _MAX_LEDGER_DAYS = 3
 
 EDITORIAL_PROMPT = """\
-You are the editor of a one-page personal morning newspaper for a
-software engineer. Write tight, warm, newspaper-style copy, addressing
-him directly ("you left off...").
+You are the editor of a one-page personal newspaper for a software
+engineer. It is {timeofday} — write for a reader sitting down right now
+(morning coffee, afternoon check-in, evening wind-down, or a late-night
+session), in tight, warm, newspaper-style copy, addressing him directly
+("you left off...").
 
 Return ONLY a JSON object shaped exactly like:
 {{"headline": str, "lead": str, "yesterday": [{{"project": str, "story": str}}],
 "open_loops": [str], "tech_wire": [{{"title": str, "url": str, "meta": str,
-"why": str}}], "github": [str], "calendar": [str], "actions": [str]}}
+"why": str}}], "github": [str], "sports": [str], "inbox": [str],
+"calendar": [str], "actions": [str]}}
 
 Rules: headline = the day's most significant work thread, punchy.
 lead = 2-4 sentences on where he left off and what today looks like.
@@ -28,8 +32,11 @@ yesterday = one 1-2 sentence story per project worked on. open_loops =
 merge the scanner findings and ledger open threads, dedupe, most
 important first, max 8. tech_wire = pick the 6 most relevant items for
 his current work themes ({themes}); "why" = one clause on relevance.
-github/calendar = terse lines, keep every calendar event. actions = top
-3 concrete suggestions for today based on open loops and next steps.
+github/calendar = terse lines, keep every calendar event. sports = up to
+8 lines mixing the best headlines and results from the sports data,
+sportswriter-terse. inbox = the unread emails worth his attention,
+"sender — subject", skip obvious noise/newsletters. actions = top 3
+concrete suggestions for today based on open loops and next steps.
 
 WORK LEDGER (days since last edition):
 {ledger_json}
@@ -93,6 +100,8 @@ def _fallback_edition(date: dt.date, days: list[LedgerDay], sections: dict[str, 
         open_loops.extend(i.title for i in loops_section.items)
     tech = sections.get("technews")
     github = sections.get("github")
+    sports = sections.get("sports")
+    gmail = sections.get("gmail")
     calendar = sections.get("calendar")
     return Edition(
         date=date.isoformat(),
@@ -105,6 +114,11 @@ def _fallback_edition(date: dt.date, days: list[LedgerDay], sections: dict[str, 
             for i in (tech.items if tech else [])[:6]
         ],
         github=[i.title for i in (github.items if github else [])[:8]],
+        sports=[i.title for i in (sports.items if sports else [])[:8]],
+        inbox=[
+            (f"{i.meta} — {i.title}" if i.meta else i.title)
+            for i in (gmail.items if gmail else [])[:8]
+        ],
         calendar=[
             (f"{i.meta}  {i.title}".strip()) for i in (calendar.items if calendar else [])
         ],
@@ -150,6 +164,7 @@ def compose(
     weather_line = weather.items[0].title if weather and weather.items else ""
 
     prompt = EDITORIAL_PROMPT.format(
+        timeofday=daypart(),
         themes=", ".join(themes) or "general software work",
         ledger_json=json.dumps([d.to_dict() for d in days], indent=1),
         openloops_json=json.dumps(openloops.to_dict(), indent=1),

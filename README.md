@@ -60,8 +60,8 @@ real work.
    your raw activity                      the outside world
 ┌──────────────────────┐            ┌─────────────────────────────┐
 │ Claude Code sessions │            │ Hacker News + your RSS      │
-│ Codex sessions       │            │ GitHub notifications & PRs  │
-│ git commits          │            │ today's calendar · weather  │
+│ Codex sessions       │            │ GitHub · sports · Gmail     │
+│ git commits          │            │ calendar · weather          │
 └──────────┬───────────┘            └──────────────┬──────────────┘
            │  work connectors                      │  section connectors
            ▼                                       │
@@ -104,8 +104,8 @@ paper        # first run: names your paper, sets your city, backfills your journ
 The first run backfills up to 14 days of journal (a minute or two, narrated).
 Every morning after that is seconds.
 
-Optional, for more sections: `gh` (GitHub), `gcalcli` or `icalBuddy`
-(calendar), Google Chrome (PDF printing).
+Optional: `gh` (GitHub section), `paper auth gmail` (inbox + calendar),
+Google Chrome (PDF printing).
 
 ## The commands
 
@@ -118,6 +118,7 @@ Optional, for more sections: `gh` (GitHub), `gcalcli` or `icalBuddy`
 | `paper journal` | Yesterday's journal entry (`paper journal 2026-06-28` for any day) |
 | `paper ingest` | Update the journal only — cron-friendly |
 | `paper connectors` | Every connector and its status |
+| `paper auth gmail` | Connect your inbox (IMAP app password → macOS Keychain) |
 | `paper config` | Show configuration |
 | `paper --plain` | Markdown-ish plain text (automatic when piping) |
 
@@ -156,9 +157,33 @@ disabled = []                                 # e.g. ["calendar"]
 rss_feeds = []                                # your feeds join the tech wire
 hn_count = 15
 
+[sports]
+leagues = ["all"]                             # or pick: nba, wnba, nfl, mlb, nhl, epl, ucl, mls
+
+[gmail]
+address = ""                                  # set via `paper auth gmail`
+
+[calendar]
+ics_url = ""                                  # Google Calendar's secret iCal address (zero OAuth)
+
 [weather]
 location = "Seattle"
 ```
+
+**Google account access, the low-friction way.** One command, no Google Cloud
+project, no OAuth consent screens, no extra tools:
+
+```bash
+paper auth gmail
+```
+
+It asks for two things and stores both in your macOS Keychain:
+
+- an **app password** ([myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords),
+  needs 2FA) — your top unread mail becomes **THE MAILBAG**
+- your calendar's **secret iCal address** (Google Calendar → Settings → your
+  calendar → *Secret address in iCal format*) — today's events become
+  **TODAY'S CALENDAR**
 
 All state lives under `~/.paper/` (override with `$PAPER_HOME`):
 `ledger/` (your journal), `editions/` (each day's paper + HTML + PDF),

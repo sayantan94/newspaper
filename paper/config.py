@@ -32,6 +32,20 @@ disabled = []
 rss_feeds = []
 hn_count = 15
 
+[sports]
+# Leagues for the sports page: "all", or any of nba, wnba, nfl, mlb, nhl, epl, ucl, mls
+leagues = ["all"]
+
+[gmail]
+# Your Gmail address; run `paper auth gmail` to store an app password in the
+# Keychain (https://myaccount.google.com/apppasswords). Empty = section off.
+address = ""
+
+[calendar]
+# Google Calendar → Settings → "Secret address in iCal format" (zero OAuth).
+# Easiest: run `paper auth gmail`, which asks for this and stores it securely.
+ics_url = ""
+
 [weather]
 location = "Seattle"
 
@@ -61,6 +75,9 @@ class PaperConfig:
     disabled: list[str] = field(default_factory=list)
     rss_feeds: list[str] = field(default_factory=list)
     hn_count: int = 15
+    sports_leagues: list[str] = field(default_factory=lambda: ["all"])
+    gmail_address: str = ""
+    calendar_ics_url: str = ""
     location: str = "Seattle"
     llm_engine: str = "claude"
     llm_command: str = ""
@@ -92,6 +109,9 @@ def load_config() -> PaperConfig:
     technews = data.get("technews", {})
     cfg.rss_feeds = technews.get("rss_feeds", cfg.rss_feeds)
     cfg.hn_count = technews.get("hn_count", cfg.hn_count)
+    cfg.sports_leagues = data.get("sports", {}).get("leagues", cfg.sports_leagues)
+    cfg.gmail_address = data.get("gmail", {}).get("address", cfg.gmail_address)
+    cfg.calendar_ics_url = data.get("calendar", {}).get("ics_url", cfg.calendar_ics_url)
     cfg.location = data.get("weather", {}).get("location", cfg.location)
     llm = data.get("llm", {})
     cfg.llm_engine = llm.get("engine", cfg.llm_engine)

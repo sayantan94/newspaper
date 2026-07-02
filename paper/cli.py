@@ -26,7 +26,7 @@ from .render import render_edition
 from .store import Store
 
 _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
-_SUBCOMMANDS = ("journal", "ingest", "pdf", "connectors", "config")
+_SUBCOMMANDS = ("journal", "ingest", "pdf", "connectors", "config", "auth")
 
 _CHROME_CANDIDATES = [
     "google-chrome",
@@ -193,6 +193,67 @@ def _cmd_connectors(args, config, store, editor, console) -> int:
     return 0
 
 
+def _cmd_auth(args, config, store, editor, console) -> int:
+    if args.arg != "gmail":
+        console.print("usage: paper auth gmail")
+        return 1
+    from getpass import getpass
+
+    from .connectors.gmail import fetch_unread
+    from .secrets import set_secret
+
+    console.print("[bold]Connect your Gmail inbox[/bold]")
+    console.print(
+        "[dim]Uses IMAP with an app password — no Google Cloud project needed.\n"
+        "Create one at https://myaccount.google.com/apppasswords (requires 2FA).[/dim]"
+    )
+    default = config.gmail_address
+    prompt = f"  Gmail address{f' [{default}]' if default else ''}: "
+    address = input(prompt).strip() or default
+    if not address:
+        console.print("[red]no address given[/red]")
+        return 1
+    password = getpass("  App password (hidden): ").replace(" ", "")
+    if not password:
+        console.print("[red]no password given[/red]")
+        return 1
+    with console.status("testing IMAP login …"):
+        try:
+            fetch_unread(address, password, limit=1)
+        except Exception as e:
+            console.print(f"[red]login failed:[/red] {e}")
+            return 1
+    if not set_secret("gmail", address, password):
+        console.print("[red]could not store the password in the Keychain[/red]")
+        return 1
+    if config.gmail_address != address:
+        text = config_path().read_text().replace('address = ""', f'address = "{address}"', 1)
+        config_path().write_text(text)
+    console.print(f"[bold green]✓[/bold green] inbox connected — {address} will appear in THE MAILBAG")
+
+    console.print(
+        "\n[bold]Connect your Google Calendar[/bold] (optional)\n"
+        "[dim]Google Calendar → Settings → your calendar → 'Secret address in iCal\n"
+        "format' — copy that URL. Zero OAuth, updates automatically.[/dim]"
+    )
+    ics_url = input("  Secret iCal URL (Enter to skip): ").strip()
+    if ics_url:
+        with console.status("checking the calendar feed …"):
+            try:
+                from .connectors._http import get_text
+
+                if "BEGIN:VCALENDAR" not in get_text(ics_url):
+                    raise ValueError("that URL did not return an iCal feed")
+            except Exception as e:
+                console.print(f"[red]calendar check failed:[/red] {e}")
+                return 1
+        if not set_secret("gcal-ics", "default", ics_url):
+            console.print("[red]could not store the URL in the Keychain[/red]")
+            return 1
+        console.print("[bold green]✓[/bold green] calendar connected — TODAY'S CALENDAR is live")
+    return 0
+
+
 def _cmd_config(args, config, store, editor, console) -> int:
     console.print(f"[dim]{config_path()}[/dim]\n")
     console.print(config_path().read_text())
@@ -236,6 +297,7 @@ def main(argv: list[str] | None = None) -> int:
         "pdf": _cmd_pdf,
         "connectors": _cmd_connectors,
         "config": _cmd_config,
+        "auth": _cmd_auth,
     }
     handler = handlers.get(args.command, _cmd_edition)
     try:

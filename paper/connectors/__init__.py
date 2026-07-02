@@ -21,7 +21,7 @@ __all__ = [
 
 # Paper order matters: this is the order sections appear in the edition flow.
 _BUILTIN_WORK = ["claude_code", "codex", "git"]
-_BUILTIN_SECTION = ["openloops", "technews", "github", "weather", "calendar_"]
+_BUILTIN_SECTION = ["openloops", "technews", "github", "sports", "gmail", "weather", "calendar_"]
 
 
 def _classes_from_module(module, base) -> list[type]:

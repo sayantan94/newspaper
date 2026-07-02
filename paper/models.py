@@ -86,6 +86,8 @@ class Edition:
     open_loops: list[str] = field(default_factory=list)
     tech_wire: list[dict] = field(default_factory=list)  # [{"title","url","meta","why"}]
     github: list[str] = field(default_factory=list)
+    sports: list[str] = field(default_factory=list)
+    inbox: list[str] = field(default_factory=list)
     calendar: list[str] = field(default_factory=list)
     actions: list[str] = field(default_factory=list)
     weather: str = ""

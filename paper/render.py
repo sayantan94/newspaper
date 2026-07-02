@@ -19,6 +19,7 @@ from rich.text import Text
 
 from .config import DEFAULT_MASTHEAD
 from .models import Edition
+from .util import daypart
 
 _WIDTH = 100
 
@@ -87,7 +88,9 @@ def render_edition(
         dateline.append(f" — {edition.weather}")
     console.print(dateline)
     rule("═")
-    console.print(Align.center(Text("LATE CITY FINAL — THE MORNING EDITION", style="dim")))
+    console.print(
+        Align.center(Text(f"LATE CITY FINAL — THE {daypart().upper()} EDITION", style="dim"))
+    )
     console.print()
 
     # ── Front page ─────────────────────────────────────────────
@@ -151,6 +154,24 @@ def render_edition(
         console.print(columns)
         console.print()
 
+    # ── The mailbag ────────────────────────────────────────────
+    if edition.inbox:
+        console.print(_kicker("The Mailbag", "unread & worth your attention"))
+        for line in edition.inbox:
+            item = Text("  ✉ ", style="dim")
+            item.append(line)
+            console.print(item)
+        console.print()
+
+    # ── Sports page ────────────────────────────────────────────
+    if edition.sports:
+        console.print(_kicker("The Sports Page", "results & headlines"))
+        for line in edition.sports:
+            item = Text("  ▪ ", style="dim")
+            item.append(line)
+            console.print(item)
+        console.print()
+
     # ── Today ──────────────────────────────────────────────────
     if edition.calendar or edition.actions:
         console.print(_kicker("Today", "the forward desk"))
@@ -195,6 +216,12 @@ def _render_plain(edition: Edition, masthead: str) -> None:
     if edition.github:
         out.append("\n## GitHub")
         out += [f"- {line}" for line in edition.github]
+    if edition.inbox:
+        out.append("\n## Inbox")
+        out += [f"- {line}" for line in edition.inbox]
+    if edition.sports:
+        out.append("\n## Sports")
+        out += [f"- {line}" for line in edition.sports]
     if edition.calendar or edition.actions:
         out.append("\n## Today")
         out += [f"- {line}" for line in edition.calendar]
