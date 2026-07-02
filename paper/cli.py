@@ -55,18 +55,29 @@ def _first_run(console: Console) -> None:
 
 def _ingest_pending(config, store, editor, console: Console, verbose: bool) -> None:
     pending = unprocessed_dates(store, config, dt.date.today())
-    for i, date in enumerate(pending, 1):
-        label = f"catching up on {date:%A, %b} {date.day}"
-        if len(pending) > 1:
-            label += f"  ({i}/{len(pending)})"
-        with console.status(f"[dim]{label} …[/dim]"):
+    if not pending:
+        return
+    if len(pending) > 1:
+        console.print(
+            f"[bold]Catching up:[/bold] journaling [bold]{len(pending)} day(s)[/bold] of your "
+            "coding sessions and git history.\n"
+            f"[dim]One-time backfill into {store.root / 'ledger'} — future mornings are fast.[/dim]\n"
+        )
+    for date in pending:
+        with console.status(f"reading {date:%a, %b} {date.day} …"):
             day = ingest_date(date, config, store, editor, verbose=verbose)
-        if day.projects and verbose:
-            console.print(f"[dim]  journaled {date}: {len(day.projects)} project(s)[/dim]")
+        if day.projects:
+            names = ", ".join(p.project for p in day.projects[:4])
+            if len(day.projects) > 4:
+                names += f" +{len(day.projects) - 4} more"
+            console.print(f"  [green]✓[/green] {date:%a, %b} {date.day} — {names}")
+        else:
+            console.print(f"  [dim]· {date:%a, %b} {date.day} — quiet day[/dim]")
+    console.print()
 
 
 def _get_edition(date: dt.date, config, store, editor, console, refresh=False, verbose=False):
-    with console.status("[dim]composing your edition …[/dim]"):
+    with console.status("writing your edition (open loops · news · github · weather) …"):
         return compose(date, config, store, editor, refresh=refresh, verbose=verbose)
 
 
