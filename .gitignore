@@ -4,3 +4,4 @@ __pycache__/
 .pytest_cache/
 uv.lock
 docs/superpowers
+x-post.md
