@@ -1,0 +1,9 @@
+{"timestamp":"2026-06-30T18:00:00.000Z","type":"session_meta","payload":{"id":"abc","timestamp":"2026-06-30T18:00:00.000Z","cwd":"/Users/dev/Workspace/mesh","originator":"codex-tui","cli_version":"0.141.0"}}
+{"timestamp":"2026-06-30T18:00:01.000Z","type":"event_msg","payload":{"type":"task_started","turn_id":"t1"}}
+{"timestamp":"2026-06-30T18:00:02.000Z","type":"response_item","payload":{"type":"message","role":"developer","content":[{"type":"input_text","text":"<permissions instructions>sandbox stuff"}]}}
+{"timestamp":"2026-06-30T18:01:00.000Z","type":"response_item","payload":{"type":"message","role":"user","content":[{"type":"input_text","text":"refactor the mesh loader to stream chunks"}]}}
+{"timestamp":"2026-06-30T18:02:00.000Z","type":"response_item","payload":{"type":"message","role":"user","content":[{"type":"input_text","text":"<environment_context>ignore me"}]}}
+{"timestamp":"2026-06-30T18:10:00.000Z","type":"response_item","payload":{"type":"message","role":"assistant","content":[{"type":"output_text","text":"Refactoring in progress."}]}}
+{"timestamp":"2026-06-30T18:20:00.000Z","type":"response_item","payload":{"type":"message","role":"assistant","content":[{"type":"output_text","text":"Refactored the mesh loader to stream chunks; tests green."}]}}
+{"timestamp":"2026-06-30T18:21:00.000Z","type":"turn_context","payload":{"turn_id":"t1","cwd":"/Users/dev/Workspace/mesh"}}
+garbage {{{
