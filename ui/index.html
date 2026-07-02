@@ -29,150 +29,69 @@
     <div class="rule rule-heavy"></div>
     <h1 class="title">paper</h1>
     <p class="dateline">
-      <span>Vol.&nbsp;I</span> — <span id="today">every morning</span> —
-      <span>your terminal, everywhere</span> — <span class="red">free &amp; open&nbsp;source</span>
+      <span id="today">every morning</span> — your terminal, everywhere —
+      <span class="red">free &amp; open&nbsp;source</span>
     </p>
     <div class="rule rule-heavy"></div>
-    <p class="edition-line">LATE CITY FINAL — THE LAUNCH EDITION</p>
   </header>
 
-  <!-- ══ Lead story ══ -->
+  <!-- ══ Lead ══ -->
   <main>
     <section class="lead reveal d1">
       <h2 class="headline">Your Terminal Prints<br>a Newspaper Now</h2>
-      <p class="deck">— it knows where you left off, so you never spend the first
-      twenty minutes finding out —</p>
+      <p class="deck">— it knows where you left off, so you never spend
+      the first twenty minutes finding out —</p>
 
-      <div class="columns">
-        <div class="col">
-          <p class="has-dropcap">Every developer wakes to the same cold case: <em>what was I
-          doing yesterday?</em> The tabs are gone. The terminal scrolled away. The
-          brilliant plan from 11:48&nbsp;p.m. lives in a session file nobody reads.
-          <strong>paper</strong> reads it. It combs your Claude&nbsp;Code and Codex
-          transcripts, your git history, your unread mail and the morning wire — and an
-          AI editorial desk writes you a front page about your own life.</p>
-          <p>There is no journaling. There is no app. There is one command, and then
-          there is a newspaper: a headline about your work, the threads you left
-          hanging, your calendar above the fold, the news annotated with <em>why it
-          matters to you</em>, and three suggestions for the day — terse, correct,
-          and slightly bossy, the way a good editor should be.</p>
-        </div>
-        <div class="col">
-          <p>The paper knows when it is being read. At eight it is <span class="sc">the
-          morning edition</span>; at one a.m. it is <span class="sc">the late night
-          edition</span>, and its lead paragraph writes for that hour. Editions are
-          cached — the first read of the day does the work, and every read after is
-          instant, like a paper that has already landed on the porch.</p>
-          <p>Sources are connectors: drop a Python file in a folder and your
-          markets desk, training log, or arXiv column appears in tomorrow&rsquo;s
-          edition. A broken connector never stops the presses. Nothing needs an API
-          key — the writing engine is whichever agent CLI you already use,
-          <strong>claude</strong> or <strong>codex</strong>, driven headlessly.</p>
-        </div>
-        <aside class="col subscribe-col">
-          <div class="subscribe" id="subscribe">
-            <p class="subscribe-kicker">HOW TO SUBSCRIBE</p>
-            <div class="rule-thin"></div>
-            <pre><code>git clone github.com/sayantan94/newspaper
-cd newspaper
-uv tool install --editable .
+      <p class="intro">Your coding agents already keep a perfect record of your
+      work — nobody reads it. <strong>paper</strong> does: it journals your
+      Claude&nbsp;Code and Codex sessions and your git history, adds your inbox,
+      calendar, and the morning wire, and an AI editorial desk prints you a
+      daily edition about your own life.</p>
+
+      <div class="subscribe" id="subscribe">
+        <p class="subscribe-kicker">HOW TO SUBSCRIBE</p>
+        <div class="rule-thin"></div>
+        <pre><code>git clone github.com/sayantan94/newspaper
+cd newspaper &amp;&amp; uv tool install --editable .
 paper</code></pre>
-            <button class="copy" data-copy="git clone https://github.com/sayantan94/newspaper && cd newspaper && uv tool install --editable . && paper">copy the incantation</button>
-            <p class="subscribe-note">Delivery begins immediately. The first edition
-            backfills a fortnight of your history; thereafter the paper is waiting
-            before the coffee is.</p>
-            <a class="gh" href="https://github.com/sayantan94/newspaper">★ read the source — github.com/sayantan94/newspaper</a>
-          </div>
-        </aside>
+        <button class="copy" data-copy="git clone https://github.com/sayantan94/newspaper && cd newspaper && uv tool install --editable . && paper">copy the incantation</button>
+        <a class="gh" href="https://github.com/sayantan94/newspaper">★ read the source — github.com/sayantan94/newspaper</a>
       </div>
     </section>
 
     <!-- ══ By the numbers ══ -->
     <section class="numbers reveal d2" aria-label="What paper saves you">
       <div class="rule rule-heavy"></div>
-      <p class="numbers-kicker">BY THE NUMBERS — WHAT A SUBSCRIPTION BUYS</p>
       <div class="numbers-grid">
-        <div class="stat"><b>1</b><span>command, any hour — the whole morning routine</span></div>
-        <div class="stat"><b>30<i>s</i></b><span>to full context: yesterday, open loops, inbox, calendar</span></div>
-        <div class="stat"><b>0</b><span>API keys, OAuth screens, or manual journaling</span></div>
-        <div class="stat"><b>14</b><span>days of your history journaled on first run</span></div>
-        <div class="stat"><b>∞</b><span>sections — any source is a drop-in connector</span></div>
+        <div class="stat"><b>1</b><span>command, any hour of the day</span></div>
+        <div class="stat"><b>30<i>s</i></b><span>to full context on yesterday</span></div>
+        <div class="stat"><b>0</b><span>API keys or manual journaling</span></div>
+        <div class="stat"><b>∞</b><span>sections via drop-in connectors</span></div>
       </div>
       <div class="rule rule-heavy"></div>
     </section>
-
-    <blockquote class="pullquote reveal d2">
-      <p>“The twenty minutes you spend reconstructing yesterday — tabs, terminals,
-      <em>what was that bug?</em> — the paper spends them for you, before you sit down.
-      That's the product: <span class="red">your first ten minutes, back, every day.</span>”</p>
-    </blockquote>
-
-    <div class="dinkus reveal d2">✦ &nbsp; ✦ &nbsp; ✦</div>
 
     <!-- ══ The photograph ══ -->
-    <figure class="photo reveal d2">
+    <figure class="photo reveal d3">
       <img src="assets/edition.svg" alt="A paper edition rendered in the terminal: masthead, calendar, mailbag, yesterday's work, open loops, tech wire, sports, and the top three actions." loading="lazy">
-      <figcaption>The evening edition, moments after rolling off the press. Calendar and
-      mailbag above the fold; the editorial desk sets every headline. <span class="red">(Staff photograph)</span></figcaption>
+      <figcaption>The evening edition, moments after rolling off the press.
+      Calendar and mailbag above the fold; the editorial desk sets every headline.</figcaption>
     </figure>
 
-    <!-- ══ Section desk briefs ══ -->
-    <section class="briefs reveal d3">
-      <div class="rule rule-heavy"></div>
-      <div class="briefs-grid">
-        <article>
-          <h3 class="kicker">The Journal Desk</h3>
-          <p>Your agent sessions and commits, distilled nightly into a permanent
-          first-person record. Skip a weekend; Monday&rsquo;s paper covers everything
-          since Friday. <span class="jump">— p. 2</span></p>
-        </article>
-        <article>
-          <h3 class="kicker">The Mailbag</h3>
-          <p>Unread Gmail worth your attention, fetched with an app password kept in
-          the Keychain. No OAuth consent screens were harmed. <span class="jump">— p. 3</span></p>
-        </article>
-        <article>
-          <h3 class="kicker">The Sports Page</h3>
-          <p>Headlines and finals from every league you follow — or
-          <code>["all"]</code> of them, for completists. <span class="jump">— p. 5</span></p>
-        </article>
-        <article>
-          <h3 class="kicker">The Print Room</h3>
-          <p><code>paper pdf</code> typesets the day for actual paper, serif masthead
-          and all. Suitable for framing, or for reading away from screens like a
-          person of leisure. <span class="jump">— p. 7</span></p>
-        </article>
-      </div>
-      <div class="rule rule-heavy"></div>
-    </section>
+    <div class="dinkus reveal d3">✦ &nbsp; ✦ &nbsp; ✦</div>
 
-    <!-- ══ Print edition photo + classified ══ -->
-    <section class="lower columns-2 reveal d4">
-      <figure class="photo photo-print">
-        <img src="assets/print-edition.png" alt="The PDF print edition: a serif, two-column newspaper page." loading="lazy">
-        <figcaption>Sunday best: the print edition, via <code>paper pdf</code>.</figcaption>
-      </figure>
-      <div class="classifieds">
-        <p class="subscribe-kicker">CLASSIFIED</p>
-        <div class="rule-thin"></div>
-        <p><strong>WANTED — CONNECTORS.</strong> Sources of any provenance sought for
-        expanding daily. Markets, Strava, arXiv, home&nbsp;server gossip. Must
-        implement <code>fetch(ctx)</code>. Plugins that crash are quietly buried on
-        the back page; the paper always prints.</p>
-        <p><strong>SITUATIONS VACANT — EDITOR.</strong> Position filled headlessly by
-        <code>claude&nbsp;-p</code> or <code>codex&nbsp;exec</code>. No API keys.
-        Strong opinions about your open loops required.</p>
-        <p><strong>FOR SALE.</strong> The phrase “what was I doing yesterday?”,
-        gently used. Owner no longer has need of it.</p>
-      </div>
-    </section>
+    <!-- ══ The print edition ══ -->
+    <figure class="photo photo-print reveal d4">
+      <img src="assets/print-edition.png" alt="The PDF print edition: a serif, two-column newspaper page." loading="lazy">
+      <figcaption>Sunday best — <code>paper pdf</code> typesets the day for actual paper.</figcaption>
+    </figure>
   </main>
 
   <!-- ══ Colophon ══ -->
   <footer class="colophon reveal d4">
     <div class="rule rule-heavy"></div>
-    <p>❦ &nbsp; set in Playfair Display &amp; Old Standard on digital newsprint —
-    published from a terminal — <a href="https://github.com/sayantan94/newspaper">source at github.com/sayantan94/newspaper</a> &nbsp; ❦</p>
+    <p>❦ &nbsp; published from a terminal —
+    <a href="https://github.com/sayantan94/newspaper">github.com/sayantan94/newspaper</a> &nbsp; ❦</p>
     <p class="end">E N D &nbsp; O F &nbsp; E D I T I O N</p>
   </footer>
 </div>
