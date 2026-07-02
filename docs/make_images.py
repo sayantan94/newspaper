@@ -19,47 +19,47 @@ DOCS = Path(__file__).parent
 
 DEMO = Edition(
     date="2026-07-01",
-    headline="Agentic prep marathon lands; jobs-cli stalls at LinkedIn's gate",
+    headline="Midnight refactor pays off; orbit-cam finally spots the station",
     lead=(
-        "You left off mid-scope on jobs-cli, staring at the one constraint that "
-        "decides the whole design: LinkedIn has no public jobs API. Behind you "
-        "sits a finished monument — the CAD-4/CAD-5 prep set, committed to main. "
-        "Today is two clean, high-leverage decisions before any code."
+        "You left off at 1am with orbit-cam's new tracking loop green and one "
+        "glorious photo of the ISS streaking over the skyline. pantry-bot is "
+        "still mid-fix on its rate-limit bug, and the streaming refactor you "
+        "started is one test away from mergeable. Today writes itself."
     ),
-    calendar=["9:30 AM  Standup", "2:00 PM  1:1 with Sam"],
+    calendar=["9:30 AM  Standup", "12:30 PM  Lunch with Priya", "6:00 PM  Rooftop BBQ"],
     inbox=[
-        "GitHub — [sayantan94/newspaper] CI failed on main",
-        "Jane Doe — Re: system design interview loop",
+        "PyCon — Your talk 'Newspapers for Robots' was accepted 🎉",
+        "GitHub — [orbit-cam] nightly build failed on main",
     ],
     yesterday=[
         {
-            "project": "AgenticSysDesign",
-            "story": "Shipped a massive interview-prep set — CAD-4 with five dimension "
-            "deep-dives plus CAD-5 data-recovery — in one push to main (35 files).",
+            "project": "orbit-cam",
+            "story": "Rewrote the satellite-tracking loop to interpolate between TLE "
+            "fixes — the Raspberry Pi caught its first clean ISS pass at 11:48pm.",
         },
         {
-            "project": "jobs-cli",
-            "story": "Opened a fresh project to automate a LinkedIn job search and hit "
-            "the wall immediately: no official public jobs API.",
+            "project": "pantry-bot",
+            "story": "Taught the fridge-inventory bot to plan three dinners ahead; "
+            "stopped mid-fix on the grocery API's rate-limit bug.",
         },
     ],
     open_loops=[
-        "jobs-cli: decide the data-access strategy — this choice shapes the design",
-        "Culture interview (Round 6): prep is written but never rehearsed",
-        "x-lens: 2 uncommitted changes on main",
+        "pantry-bot: rate-limit backoff is half-written — resume at retry_after",
+        "orbit-cam: 2 uncommitted changes on main (the lens-cap detector)",
+        "streaming refactor: one flaky test between you and the merge",
     ],
     tech_wire=[
         {
-            "title": "Ask HN: Who is hiring? (July 2026)",
+            "title": "Show HN: I built a terminal that prints on receipt paper",
             "url": "",
-            "meta": "167 pts",
-            "why": "fresh, structured hiring data to point jobs-cli at",
+            "meta": "412 pts",
+            "why": "your kind of beautiful nonsense",
         },
         {
-            "title": "ZCode — Harness for GLM-5.2",
+            "title": "TLE accuracy and why your satellite is never where you think",
             "url": "",
-            "meta": "280 pts",
-            "why": "an agent coding harness worth dissecting",
+            "meta": "268 pts",
+            "why": "directly relevant to orbit-cam's new tracking loop",
         },
         {
             "title": "For first time, a cell built from scratch grows and divides",
@@ -68,16 +68,16 @@ DEMO = Edition(
             "why": "top of the wire, pure research curiosity",
         },
     ],
-    github=["rowboat — v0.6.1 shipped", "review requested — toolbelt: Add skill"],
+    github=["orbit-cam — nightly build red", "review requested — pantry-bot: Add meal planner"],
     sports=[
         "Liberty hold off Aces 93–85; Collier back at practice for the red-hot Lynx.",
         "Tigers rout Yankees 9–3; Mets blank Blue Jays 3–0.",
         "Tonali picks Tottenham, citing De Zerbi.",
     ],
     actions=[
-        "Make the jobs-cli data-access call, then scaffold the project",
-        "Rehearse the Round-6 culture answers out loud — time one full pass",
-        "Commit the x-lens changes before they go stale",
+        "Finish pantry-bot's backoff and close the rate-limit loop",
+        "Commit the lens-cap detector before it goes stale",
+        "Fix the flaky test and merge the streaming refactor",
     ],
     weather="72°F partly cloudy · Seattle",
 )
