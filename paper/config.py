@@ -36,7 +36,9 @@ hn_count = 15
 location = "Seattle"
 
 [llm]
-command = "claude"
+# engine: "claude" (claude -p) or "codex" (codex exec) — both headless, no API key
+engine = "claude"
+command = ""
 model = ""
 """
 
@@ -60,7 +62,8 @@ class PaperConfig:
     rss_feeds: list[str] = field(default_factory=list)
     hn_count: int = 15
     location: str = "Seattle"
-    llm_command: str = "claude"
+    llm_engine: str = "claude"
+    llm_command: str = ""
     llm_model: str = ""
 
     @property
@@ -91,6 +94,7 @@ def load_config() -> PaperConfig:
     cfg.hn_count = technews.get("hn_count", cfg.hn_count)
     cfg.location = data.get("weather", {}).get("location", cfg.location)
     llm = data.get("llm", {})
+    cfg.llm_engine = llm.get("engine", cfg.llm_engine)
     cfg.llm_command = llm.get("command", cfg.llm_command)
     cfg.llm_model = llm.get("model", cfg.llm_model)
     return cfg

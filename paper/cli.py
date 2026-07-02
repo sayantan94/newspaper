@@ -21,7 +21,7 @@ from .config import (
     load_config,
 )
 from .ingest import ingest_date, unprocessed_dates
-from .llm import ClaudeEditor
+from .llm import make_editor
 from .render import render_edition
 from .store import Store
 
@@ -90,7 +90,13 @@ def _cmd_edition(args, config, store, editor, console) -> int:
         edition = _get_edition(
             date, config, store, editor, console, refresh=args.refresh, verbose=args.verbose
         )
-    render_edition(edition, plain=args.plain or not sys.stdout.isatty(), masthead=config.masthead)
+    issue = max(1, len(list((store.root / "editions").glob("*.json"))))
+    render_edition(
+        edition,
+        plain=args.plain or not sys.stdout.isatty(),
+        masthead=config.masthead,
+        issue=issue,
+    )
     return 0
 
 
@@ -218,7 +224,11 @@ def main(argv: list[str] | None = None) -> int:
     _first_run(console)
     config = load_config()
     store = Store()
-    editor = ClaudeEditor(command=config.llm_command, model=config.llm_model)
+    try:
+        editor = make_editor(config)
+    except ValueError as e:
+        console.print(f"[red]config error:[/red] {e}")
+        return 1
 
     handlers = {
         "journal": _cmd_journal,

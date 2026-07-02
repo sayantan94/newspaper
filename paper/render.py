@@ -1,4 +1,9 @@
-"""Render an Edition as a terminal newspaper. Deterministic — no LLM here."""
+"""Render an Edition as a terminal broadsheet. Deterministic — no LLM here.
+
+Design notes: real newspapers are monochrome ink on paper. So: no rainbow
+colors — only weight (bold), voice (italic), and ink density (dim), with
+rules and whitespace doing the layout work.
+"""
 
 from __future__ import annotations
 
@@ -6,10 +11,8 @@ import datetime as dt
 
 from rich import box
 from rich.align import Align
-from rich.columns import Columns
 from rich.console import Console, Group
 from rich.padding import Padding
-from rich.panel import Panel
 from rich.rule import Rule
 from rich.table import Table
 from rich.text import Text
@@ -17,7 +20,12 @@ from rich.text import Text
 from .config import DEFAULT_MASTHEAD
 from .models import Edition
 
-_WIDTH = 96
+_WIDTH = 100
+
+
+def spaced_caps(s: str) -> str:
+    """T H E   D A I L Y   Y O U — the letterspaced masthead look."""
+    return " ".join(s.upper()).replace("   ", "     ")
 
 
 def _pretty_date(iso: str) -> str:
@@ -27,12 +35,22 @@ def _pretty_date(iso: str) -> str:
         return iso
 
 
-def _section_rule(title: str) -> Rule:
-    return Rule(Text(f" {title} ", style="bold"), style="grey50", characters="─")
+def _roman(n: int) -> str:
+    pairs = [(100, "C"), (90, "XC"), (50, "L"), (40, "XL"), (10, "X"), (9, "IX"), (5, "V"), (4, "IV"), (1, "I")]
+    out = ""
+    for value, numeral in pairs:
+        while n >= value:
+            out += numeral
+            n -= value
+    return out or "I"
 
 
-def _bullets(lines: list[str], style: str = "") -> Group:
-    return Group(*[Text(f"  • {line}", style=style) for line in lines])
+def _kicker(title: str, byline: str = "") -> Group:
+    head = Text()
+    head.append(spaced_caps(title), style="bold")
+    if byline:
+        head.append(f"   — {byline}", style="dim italic")
+    return Group(Rule(style="grey35", characters="─"), head, Text())
 
 
 def render_edition(
@@ -40,6 +58,7 @@ def render_edition(
     plain: bool = False,
     console: Console | None = None,
     masthead: str = DEFAULT_MASTHEAD,
+    issue: int = 1,
 ) -> None:
     if plain:
         _render_plain(edition, masthead)
@@ -47,80 +66,103 @@ def render_edition(
     console = console or Console()
     width = min(console.width or _WIDTH, _WIDTH)
 
-    # Masthead
-    dateline = Text(justify="center", style="grey62")
-    dateline.append(f"Vol. I · {_pretty_date(edition.date)}")
-    if edition.weather:
-        dateline.append(f" · {edition.weather}")
-    head = Group(
-        Align.center(Text(masthead, style="bold white")),
-        dateline,
-    )
-    console.print(Panel(head, box=box.DOUBLE, width=width))
+    def rule(char: str, style: str = "white") -> None:
+        console.print(Rule(style=style, characters=char))
 
-    # Lead story
-    if edition.headline:
-        console.print(Align.center(Text(edition.headline, style="bold underline"), width=width))
-    if edition.lead:
-        console.print(Padding(Text(edition.lead, style="italic"), (0, 4)))
-    if edition.fallback:
-        console.print(Text("  (raw edition — editorial unavailable)", style="dim"))
+    # ── Masthead ───────────────────────────────────────────────
+    console.print()
+    rule("═")
+    console.print(Align.center(Text(spaced_caps(masthead), style="bold white")))
+    dateline = Text(justify="center", style="grey62")
+    dateline.append(f"Vol. {_roman(1 + (issue - 1) // 100)}, No. {issue} — {_pretty_date(edition.date)}")
+    if edition.weather:
+        dateline.append(f" — {edition.weather}")
+    console.print(dateline)
+    rule("═")
+    ear = Table.grid(expand=True)
+    ear.add_column(justify="left")
+    ear.add_column(justify="right")
+    ear.add_row(
+        Text("THE MORNING EDITION", style="dim"),
+        Text("your day, printed daily", style="dim italic"),
+    )
+    console.print(ear)
     console.print()
 
-    # Yesterday
+    # ── Front page ─────────────────────────────────────────────
+    if edition.headline:
+        console.print(Align.center(Text(edition.headline.upper(), style="bold")))
+    if edition.lead:
+        console.print(Padding(Text(edition.lead, style="italic", justify="center"), (0, 10)))
+    if edition.fallback:
+        console.print(Align.center(Text("· raw edition — the editorial desk is out ·", style="dim")))
+    console.print()
+
+    # ── Yesterday ──────────────────────────────────────────────
     if edition.yesterday:
-        console.print(_section_rule("YESTERDAY — WHERE YOU LEFT OFF"))
+        console.print(_kicker("Yesterday", "where you left off"))
         for entry in edition.yesterday:
-            line = Text("  ")
-            line.append(entry.get("project", ""), style="bold cyan")
-            line.append(" — ")
-            line.append(entry.get("story", ""))
+            story = Text("  ")
+            story.append(entry.get("project", "").upper(), style="bold")
+            story.append("  —  ", style="dim")
+            story.append(entry.get("story", ""))
+            console.print(story)
+        console.print()
+
+    # ── Open loops ─────────────────────────────────────────────
+    if edition.open_loops:
+        console.print(_kicker("Open Loops", "the unfinished business desk"))
+        for loop in edition.open_loops:
+            line = Text("  ◦ ", style="dim")
+            line.append(loop)
             console.print(line)
         console.print()
 
-    # Open loops
-    if edition.open_loops:
-        console.print(_section_rule("OPEN LOOPS"))
-        console.print(_bullets(edition.open_loops, style="yellow"))
-        console.print()
-
-    # Two-column: tech wire | github
+    # ── The wire: two columns ──────────────────────────────────
     if edition.tech_wire or edition.github:
-        grid = Table.grid(expand=True, padding=(0, 2))
-        grid.add_column(ratio=3)
-        grid.add_column(ratio=2)
-        left_lines = []
+        columns = Table(
+            box=box.MINIMAL,
+            expand=True,
+            show_header=True,
+            header_style="bold",
+            border_style="grey35",
+            padding=(0, 2),
+        )
+        columns.add_column(spaced_caps("Tech Wire"), ratio=3)
+        columns.add_column(spaced_caps("GitHub"), ratio=2)
+        left = []
         for item in edition.tech_wire:
             t = Text()
-            t.append("• ", style="grey50")
+            t.append("• ", style="dim")
             t.append(item.get("title", ""))
             meta_bits = [b for b in (item.get("meta", ""), item.get("why", "")) if b]
             if meta_bits:
-                t.append(f"\n   {' — '.join(meta_bits)}", style="dim")
-            left_lines.append(t)
-        right_lines = [Text(f"• {line}") for line in edition.github] or [
-            Text("all quiet", style="dim")
-        ]
-        grid.add_row(
-            Group(_section_rule("TECH WIRE"), *left_lines),
-            Group(_section_rule("GITHUB"), *right_lines),
-        )
-        console.print(grid)
+                t.append(f"\n  {' — '.join(meta_bits)}", style="dim italic")
+            left.append(t)
+        right = [Text(f"• {line}") for line in edition.github] or [Text("all quiet on the remote front", style="dim italic")]
+        columns.add_row(Group(*left), Group(*right))
+        console.print(columns)
         console.print()
 
-    # Today
+    # ── Today ──────────────────────────────────────────────────
     if edition.calendar or edition.actions:
-        console.print(_section_rule("TODAY"))
+        console.print(_kicker("Today", "the forward desk"))
         for line in edition.calendar:
-            console.print(Text(f"  {line}", style="magenta"))
+            console.print(Text(f"  {line}"))
+        if edition.calendar and edition.actions:
+            console.print()
         for i, action in enumerate(edition.actions, 1):
-            console.print(Text(f"  {i}. {action}", style="bold green"))
+            item = Text(f"  {i}. ", style="dim")
+            item.append(action, style="bold")
+            console.print(item)
         console.print()
 
-    # Footer
-    for notice in edition.notices:
-        console.print(Text(f"  · {notice}", style="dim"))
-    console.print(Rule(Text(" end of edition ", style="dim"), style="grey30", characters="═"))
+    # ── Colophon ───────────────────────────────────────────────
+    if edition.notices:
+        console.print(Text("  " + "  ·  ".join(edition.notices), style="dim"))
+    rule("═")
+    console.print(Align.center(Text(spaced_caps("end of edition"), style="dim")))
+    console.print()
 
 
 def _render_plain(edition: Edition, masthead: str) -> None:

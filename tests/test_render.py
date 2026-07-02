@@ -2,7 +2,7 @@ from rich.console import Console
 
 from paper.config import DEFAULT_MASTHEAD
 from paper.models import Edition
-from paper.render import render_edition
+from paper.render import render_edition, spaced_caps
 
 
 def sample_edition():
@@ -25,10 +25,10 @@ def test_render_rich_contains_key_content():
     console = Console(record=True, width=96, force_terminal=True)
     render_edition(sample_edition(), console=console)
     text = console.export_text()
-    assert DEFAULT_MASTHEAD in text
+    assert spaced_caps(DEFAULT_MASTHEAD) in text
     assert "Wednesday, July 1, 2026" in text
-    assert "x-lens" in text
-    assert "OPEN LOOPS" in text
+    assert "x-lens" in text.lower()
+    assert spaced_caps("Open Loops") in text
     assert "Show HN: paper" in text
     assert "Fix unicode tests" in text
     assert "install gcalcli" in text
@@ -47,10 +47,10 @@ def test_render_fallback_note():
     ed = sample_edition()
     ed.fallback = True
     render_edition(ed, console=console)
-    assert "editorial unavailable" in console.export_text()
+    assert "editorial desk is out" in console.export_text()
 
 
 def test_render_empty_edition_does_not_crash():
     console = Console(record=True, width=96, force_terminal=True)
     render_edition(Edition(date="2026-07-01"), console=console)
-    assert DEFAULT_MASTHEAD in console.export_text()
+    assert spaced_caps(DEFAULT_MASTHEAD) in console.export_text()

@@ -59,7 +59,7 @@ def wired(paper_home_tmp, monkeypatch):
     paper_home_tmp.mkdir(parents=True, exist_ok=True)
     config_path().write_text('masthead = "THE TEST TIMES"\nlookback_days = 2\n')
     editor = FakeEditor(responses=[LEDGER, EDITORIAL])
-    monkeypatch.setattr(cli, "ClaudeEditor", lambda **kw: editor)
+    monkeypatch.setattr(cli, "make_editor", lambda cfg: editor)
     monkeypatch.setattr(registry, "work_connectors", lambda cfg: [StubWork()])
     monkeypatch.setattr(registry, "section_connectors", lambda cfg: [StubSection()])
     return editor
@@ -77,7 +77,7 @@ def test_default_flow_end_to_end(wired, capsys):
 
 
 def test_first_run_writes_default_config_non_tty(paper_home_tmp, monkeypatch, capsys):
-    monkeypatch.setattr(cli, "ClaudeEditor", lambda **kw: FakeEditor(response=None))
+    monkeypatch.setattr(cli, "make_editor", lambda cfg: FakeEditor(response=None))
     monkeypatch.setattr(registry, "work_connectors", lambda cfg: [])
     monkeypatch.setattr(registry, "section_connectors", lambda cfg: [])
     assert not config_path().exists()

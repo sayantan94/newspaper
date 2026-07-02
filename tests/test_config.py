@@ -12,7 +12,8 @@ def test_first_load_writes_default_config(paper_home_tmp):
     assert config_path().exists()
     assert config_path().read_text() == DEFAULT_CONFIG
     assert cfg.lookback_days == 14
-    assert cfg.llm_command == "claude"
+    assert cfg.llm_engine == "claude"
+    assert cfg.llm_command == ""
 
 
 def test_toml_values_override_defaults(paper_home_tmp):
@@ -34,6 +35,7 @@ hn_count = 5
 location = "Portland"
 
 [llm]
+engine = "codex"
 command = "claude-x"
 model = "sonnet"
 """
@@ -47,6 +49,7 @@ model = "sonnet"
     assert cfg.rss_feeds == ["https://example.com/feed.xml"]
     assert cfg.hn_count == 5
     assert cfg.location == "Portland"
+    assert cfg.llm_engine == "codex"
     assert cfg.llm_command == "claude-x"
     assert cfg.llm_model == "sonnet"
 

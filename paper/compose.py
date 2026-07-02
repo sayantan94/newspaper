@@ -87,8 +87,7 @@ def _fallback_edition(date: dt.date, days: list[LedgerDay], sections: dict[str, 
     for day in days:
         for p in day.projects:
             yesterday.append({"project": p.project, "story": p.summary})
-            if p.where_left_off:
-                open_loops.append(f"{p.project}: {p.where_left_off}")
+    # the openloops section already carries where-left-off from the latest ledger
     loops_section = sections.get("openloops")
     if loops_section:
         open_loops.extend(i.title for i in loops_section.items)
@@ -169,7 +168,10 @@ def compose(
         edition = _fallback_edition(date, days, all_sections)
 
     edition.weather = weather_line
-    notices = [f"{s.title.lower() or s.name}: {s.notice}" for s in sections.values() if s.notice]
+    notices = []
+    if edition.fallback:
+        notices.append("editorial desk unavailable (engine timeout/auth?) — retry with: paper --refresh")
+    notices += [f"{s.title.lower() or s.name}: {s.notice}" for s in sections.values() if s.notice]
     if openloops.notice:
         notices.append(f"open loops: {openloops.notice}")
     if weather is not None and weather.notice:

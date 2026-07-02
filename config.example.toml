@@ -1,0 +1,37 @@
+# paper — example configuration
+# Live file: ~/.paper/config.toml (created on first run; $PAPER_HOME to relocate)
+
+# The name across the top of your paper
+masthead = "THE DAILY YOU"
+
+# Roots scanned for git repos (work evidence, open loops)
+workspace_roots = ["~/Documents/Workspace"]
+
+# How many days back ingest looks for unprocessed days
+lookback_days = 14
+
+# Optional: directory that receives a human-readable markdown copy of each
+# day's journal (e.g. an Obsidian folder). Empty = disabled.
+markdown_mirror = ""
+
+[connectors]
+# Connector names to disable, e.g. ["calendar", "weather"]
+disabled = []
+
+[technews]
+# Extra RSS/Atom feeds for the tech wire
+rss_feeds = [
+  # "https://simonwillison.net/atom/everything/",
+]
+hn_count = 15
+
+[weather]
+location = "Seattle"
+
+[llm]
+# engine: "claude" (claude -p) or "codex" (codex exec) — both headless, no API key
+engine = "claude"
+# command: override the CLI binary; empty = same as engine name
+command = ""
+# model: optional model override passed to the engine
+model = ""
