@@ -94,7 +94,9 @@ class Edition:
 
     @classmethod
     def from_dict(cls, d: dict) -> "Edition":
-        return cls(**_pick(cls, d))
+        data = _pick(cls, d)
+        data.setdefault("date", "")
+        return cls(**data)
 
     def to_dict(self) -> dict:
         return asdict(self)
