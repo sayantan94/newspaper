@@ -156,13 +156,16 @@ paper                  # ingest anything unprocessed → compose → render toda
 paper --refresh        # refetch sections + rewrite editorial for today
 paper 2026-06-30       # render a past edition (compose if ledger exists but edition doesn't)
 paper journal [date]   # print the ledger/journal for a date (default yesterday)
-paper ingest [--rebuild] [--date D]
+paper ingest [date] [--rebuild]
+paper pdf [date]       # newspaper-styled HTML → PDF via headless Chrome (printable)
 paper connectors       # list connectors, availability, last status
-paper config           # open/print config; first run writes a commented default
+paper config           # print config; first run writes a commented default
 ```
 
-First-run experience: `paper` with no config writes a default `~/.paper/config.toml`
-(workspace roots guessed, weather location prompt), then proceeds.
+First-run experience: `paper` with no config interactively asks for the masthead
+name and weather location (defaults on Enter / non-TTY), writes a commented
+`~/.paper/config.toml`, then proceeds. (Added mid-implementation at user request:
+custom masthead + printable PDF edition — "customer experience is important".)
 
 ## Error handling
 
@@ -184,4 +187,3 @@ First-run experience: `paper` with no config writes a default `~/.paper/config.t
 
 - Scheduled generation/push delivery (cron/launchd wiring documented, not automated).
 - Email/Slack/news-beyond-RSS integrations (add later as connectors).
-- Web/HTML edition.
