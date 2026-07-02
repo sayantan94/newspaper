@@ -1,109 +1,176 @@
-# paper 🗞️
+# paper
 
-**Your personal morning newspaper, in the terminal.** `paper` catches you up on
-where you left off: it reads your raw coding-agent sessions (Claude Code and
-Codex), your git history, and the outside world — then writes and lays out a
-one-page morning edition just for you.
+**Wake up. Pour coffee. Read yesterday's you.**
+
+`paper` is a personal morning newspaper for your terminal. Every morning it
+reads what you actually did yesterday — your Claude Code sessions, your Codex
+sessions, your git commits — and an AI editorial desk writes you a front page:
+where you left off, what's unfinished, what's happening in your world, and the
+three things worth doing today.
+
+No manual journaling. No "what was I doing again?" Just run `paper`.
+
+```text
+“All the code that's fit to print.”                          price: one coffee ☕
+════════════════════════════════════════════════════════════════════════════════
+                          T H E   D A I L Y   Y O U
+Vol. I, No. 1 — Wednesday, July 1, 2026 — 59°F clear, 51–63°F, 1% rain · Seattle
+════════════════════════════════════════════════════════════════════════════════
+                      LATE CITY FINAL — THE MORNING EDITION
+
+         AGENTIC PREP MARATHON LANDS; JOBS-CLI STALLS AT LINKEDIN'S GATE
+      YOU left off mid-scope on jobs-cli, staring at the one constraint
+      that decides the whole design: LinkedIn has no public jobs API and
+      scraping breaks their ToS. Behind you sits a finished monument —
+      the CAD-4/CAD-5 prep set, all committed to main. Today is two
+      clean, high-leverage decisions before any code.
+                                        ❦
+────────────────────────────────────────────────────────────────────────────────
+Y E S T E R D A Y   — where you left off
+
+  AGENTICSYSDESIGN  —  You shipped a massive interview-prep set — CAD-4 with
+five dimension deep-dives, plus CAD-5 data-recovery and SSE+Redis Streams —
+landing it in one push to main (22dbb1e, 35 files, ~24.7k insertions).
+  JOBS-CLI  —  You opened a fresh project to automate a LinkedIn job search
+and hit the wall immediately: no official public jobs API.
+
+────────────────────────────────────────────────────────────────────────────────
+O P E N   L O O P S   — the unfinished business desk
+
+  ◦ jobs-cli: decide the data-access strategy — this choice shapes the design
+  ◦ Culture interview (Round 6): prep is written but never rehearsed
+  ◦ Verify the draft in /tmp/cad5/part3.md actually merged — it may be orphaned
+
+                                                ╷
+   T E C H   W I R E                            │   G I T H U B
+╶───────────────────────────────────────────────┼──────────────────────────────╴
+   • Ask HN: Who is hiring? (July 2026)         │   • rowboat now at v0.6.1 —
+       167 pts — a clean, structured job feed   │     eight releases since
+       for jobs-cli — and live leads for your   │     v0.4.2
+       own search                               │
+```
+
+That headline, that lead, those "why this matters to *you*" annotations on the
+news — all written fresh each morning by the editorial desk, grounded in your
+real work.
+
+## How it works
 
 ```
-╔══════════════════════════════════════════════════════════╗
-║                      THE DAILY YOU                        ║
-║        Vol. I · Wednesday, July 1, 2026 · 72°F clear      ║
-╚══════════════════════════════════════════════════════════╝
-                Parser lands; unicode fight continues
-    You left off with red unicode tests in x-lens. Light calendar
-    today — a good morning to close them out.
-
-──────────────────── YESTERDAY — WHERE YOU LEFT OFF ────────────────────
-  x-lens — Built the streaming parser; tests mostly green.
-
-──────────────────────────── OPEN LOOPS ────────────────────────────────
-  • x-lens: 2 uncommitted changes on main
-  • newspaper: PR #14 awaiting your review
-
-── TECH WIRE ───────────────────────────┬── GITHUB ──────────────────────
-  • Show HN: terminal newspapers        │  • livecv: CI failed
-     412 pts — your beat                │  • review requested — toolbelt
+   your raw activity                      the outside world
+┌──────────────────────┐            ┌─────────────────────────────┐
+│ Claude Code sessions │            │ Hacker News + your RSS      │
+│ Codex sessions       │            │ GitHub notifications & PRs  │
+│ git commits          │            │ today's calendar · weather  │
+└──────────┬───────────┘            └──────────────┬──────────────┘
+           │  work connectors                      │  section connectors
+           ▼                                       │
+   INGEST — one LLM call per day                   │
+   distills evidence into a journal                │
+   ~/.paper/ledger/YYYY-MM-DD.json                 │
+           │                                       │
+           └────────────────┬──────────────────────┘
+                            ▼
+              COMPOSE — the editorial desk
+              one LLM call writes the edition
+                            ▼
+              RENDER — terminal broadsheet · PDF
 ```
 
-## What it does
+Three properties worth knowing:
 
-- **Journals your work automatically.** No manual logging: it distills each
-  day's Claude Code transcripts, Codex sessions, and git commits into a
-  permanent per-day journal (`~/.paper/ledger/`), summarized by `claude -p`.
-- **Surfaces open loops.** Uncommitted changes, unpushed branches, PRs waiting
-  on you, and the threads you left dangling yesterday.
-- **Brings the world in.** Hacker News + your RSS feeds (ranked by relevance to
-  what you're building), GitHub notifications, today's calendar, the weather.
-- **Prints beautifully.** `paper pdf` renders a real newspaper-styled print
-  edition (via headless Chrome) you can put on actual paper.
+- **It builds a real journal.** Each day is distilled once into a permanent
+  first-person record (`paper journal` to read it). Skip a weekend and Monday's
+  paper covers everything since Friday.
+- **Everything degrades gracefully.** No `gh`? That section hides with a hint.
+  A feed is down? One dim line in the colophon. LLM unreachable? You get the
+  raw-feed edition instead of an error.
+- **Editions are cached.** The first `paper` of the day does the work; every
+  rerun is instant.
 
 ## Install
 
-Requires Python ≥ 3.11, [uv](https://docs.astral.sh/uv/), and the
-[Claude Code CLI](https://claude.com/claude-code) (used headlessly for the
-writing — no API key needed).
+You need Python ≥ 3.11, [uv](https://docs.astral.sh/uv/), and **either** the
+[Claude Code CLI](https://claude.com/claude-code) or the
+[Codex CLI](https://github.com/openai/codex) — `paper` drives them headlessly,
+so there are **no API keys to manage**.
 
 ```bash
-cd newspaper
+git clone <this repo> && cd newspaper
 uv tool install --editable .
-paper            # first run asks you to name your paper
+paper        # first run: names your paper, sets your city, backfills your journal
 ```
 
-Optional extras: `gh` (GitHub section), `gcalcli` or `icalBuddy` (calendar).
-Missing tools just hide their section with a hint — nothing breaks.
+The first run backfills up to 14 days of journal (a minute or two, narrated).
+Every morning after that is seconds.
 
-## Daily use
+Optional, for more sections: `gh` (GitHub), `gcalcli` or `icalBuddy`
+(calendar), Google Chrome (PDF printing).
 
-```bash
-paper                # this morning's edition (builds any missing journal days first)
-paper --refresh      # refetch news/github/etc. and rewrite the editorial
-paper --plain        # plain text (also automatic when piping)
-paper 2026-06-30     # re-read a past edition
-paper pdf            # print edition → ~/.paper/editions/<date>.pdf
-paper journal        # yesterday's journal entry (or: paper journal 2026-06-28)
-paper ingest         # just update the journal (cron-friendly)
-paper connectors     # list connectors and their status
-paper config         # show configuration
+## The commands
+
+| Command | What it does |
+|---|---|
+| `paper` | Today's edition — ingests anything unprocessed, composes, prints |
+| `paper --refresh` | Refetch the world + rewrite the editorial |
+| `paper 2026-06-30` | Re-read a past edition |
+| `paper pdf` | Newspaper-styled **PDF print edition** (opens it, ready for real paper) |
+| `paper journal` | Yesterday's journal entry (`paper journal 2026-06-28` for any day) |
+| `paper ingest` | Update the journal only — cron-friendly |
+| `paper connectors` | Every connector and its status |
+| `paper config` | Show configuration |
+| `paper --plain` | Markdown-ish plain text (automatic when piping) |
+
+## Choosing your engine: Claude or Codex
+
+The writing is done by whichever agent CLI you already use, in headless mode:
+
+```toml
+# ~/.paper/config.toml
+[llm]
+engine = "claude"   # claude -p --output-format json
+# or
+engine = "codex"    # codex exec -s read-only (sandboxed, read-only)
+
+model = ""          # optional override, e.g. "claude-sonnet-5" or "o5"
 ```
 
-Editions are cached: the first `paper` of the day does the work, the rest are
-instant.
+Both engines read your work through the same connectors — Claude Code *and*
+Codex sessions feed the journal regardless of which engine writes the paper.
 
 ## Configuration
 
-`~/.paper/config.toml` (created on first run):
+`~/.paper/config.toml`, created interactively on first run
+(see [config.example.toml](config.example.toml) for the annotated version):
 
 ```toml
-masthead = "THE DAILY YOU"                    # your paper's name
+masthead = "THE DAILY YOU"                    # your paper's name — make it yours
 workspace_roots = ["~/Documents/Workspace"]   # where your repos live
-lookback_days = 14                            # how far back ingest scans
+lookback_days = 14                            # journal backfill horizon
 markdown_mirror = ""                          # optional: Obsidian folder for journal copies
 
 [connectors]
 disabled = []                                 # e.g. ["calendar"]
 
 [technews]
-rss_feeds = []                                # extra feeds for the tech wire
+rss_feeds = []                                # your feeds join the tech wire
 hn_count = 15
 
 [weather]
 location = "Seattle"
-
-[llm]
-command = "claude"                            # any CLI supporting -p --output-format json
-model = ""                                    # optional model override
 ```
 
-Set `PAPER_HOME` to relocate all state (config, journal, editions, cache).
+All state lives under `~/.paper/` (override with `$PAPER_HOME`):
+`ledger/` (your journal), `editions/` (each day's paper + HTML + PDF),
+`cache/`, `connectors/` (your plugins).
 
-## Adding your own connector
+## Write your own connector
 
-Sources are plugins. Drop a file in `~/.paper/connectors/` and it appears in
-your paper — no core changes:
+Every source is a plugin. Drop a file in `~/.paper/connectors/` — no core
+changes, and a broken plugin can never take down the paper:
 
 ```python
-# ~/.paper/connectors/stocks.py
+# ~/.paper/connectors/stocks.py — a new section
 from paper.connectors.base import SectionConnector
 from paper.models import Section, SectionItem
 
@@ -112,42 +179,38 @@ class StocksConnector(SectionConnector):
     title = "MARKETS"
 
     def fetch(self, ctx):
+        # ctx.recent_themes tells you what the reader is working on
         return Section(name=self.name, title=self.title,
                        items=[SectionItem(title="NVDA +2.1%")])
 ```
 
-Subclass `WorkConnector` (with `collect(date) -> list[Evidence]`) instead to
-feed the journal from a new source (Cursor, shell history, Slack…). Connectors
-are isolated: if yours breaks, the paper still prints.
+To feed the **journal** from a new source (Cursor, shell history, Slack…),
+subclass `WorkConnector` instead and implement `collect(date) -> list[Evidence]`.
 
-## Automating the morning
+## Automate the morning
 
-The journal builds itself whenever you run `paper`, but you can pre-bake it:
+The paper builds itself on demand, but you can pre-bake the slow part so the
+first `paper` of the day is instant:
 
 ```cron
 30 6 * * * PATH=$HOME/.local/bin:$PATH paper ingest
 ```
 
-## How it works
+## Troubleshooting
 
-```
-work connectors (claude-code · codex · git)
-        │ evidence
-        ▼
-ingest — one claude -p call per day ──► ~/.paper/ledger/YYYY-MM-DD.json   (your journal)
-                                                  │
-section connectors (openloops · technews · github · weather · calendar)
-                                                  │
-compose — one editorial claude -p call ──► ~/.paper/editions/YYYY-MM-DD.json
-                                                  │
-                                        render (terminal · pdf)
-```
-
-If the LLM is unavailable, every layer degrades to a raw-but-useful fallback.
+| Symptom | Fix |
+|---|---|
+| "editorial desk unavailable" in the colophon | The engine timed out or isn't authed — check `claude -p "hi"` (or `codex exec "hi"`), then `paper --refresh` |
+| A section is missing | `paper connectors` shows why (usually a missing CLI + install hint) |
+| Wrong city weather | Edit `[weather] location` in `~/.paper/config.toml` |
+| Want a different name on the masthead | Edit `masthead`, or delete `~/.paper/config.toml` and run `paper` to be asked again |
+| PDF says Chrome not found | Install Chrome/Chromium, or open the `.html` it printed and ⌘P |
 
 ## Development
 
 ```bash
-uv sync
-uv run pytest
+uv sync && uv run pytest        # 58 tests, no network required
 ```
+
+The design doc lives in [`docs/superpowers/specs/`](docs/superpowers/specs/),
+the implementation plan in [`docs/superpowers/plans/`](docs/superpowers/plans/).
