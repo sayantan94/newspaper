@@ -7,8 +7,11 @@ import tomllib
 from dataclasses import dataclass, field
 from pathlib import Path
 
-DEFAULT_CONFIG = """\
+DEFAULT_CONFIG_TEMPLATE = """\
 # paper — personal daily digest configuration
+
+# The name across the top of your paper
+masthead = "{masthead}"
 
 # Roots scanned for git repos (work evidence, open loops)
 workspace_roots = ["~/Documents/Workspace"]
@@ -37,6 +40,9 @@ command = "claude"
 model = ""
 """
 
+DEFAULT_MASTHEAD = "THE DAILY YOU"
+DEFAULT_CONFIG = DEFAULT_CONFIG_TEMPLATE.format(masthead=DEFAULT_MASTHEAD)
+
 
 def paper_home() -> Path:
     return Path(os.environ.get("PAPER_HOME", str(Path.home() / ".paper"))).expanduser()
@@ -44,6 +50,7 @@ def paper_home() -> Path:
 
 @dataclass
 class PaperConfig:
+    masthead: str = DEFAULT_MASTHEAD
     workspace_roots: list[str] = field(
         default_factory=lambda: [str(Path.home() / "Documents" / "Workspace")]
     )
@@ -73,7 +80,7 @@ def load_config() -> PaperConfig:
     data = tomllib.loads(path.read_text())
 
     cfg = PaperConfig()
-    for key in ("workspace_roots", "lookback_days", "markdown_mirror"):
+    for key in ("masthead", "workspace_roots", "lookback_days", "markdown_mirror"):
         if key in data:
             setattr(cfg, key, data[key])
     connectors = data.get("connectors", {})
