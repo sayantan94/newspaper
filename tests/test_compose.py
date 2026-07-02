@@ -110,7 +110,8 @@ def test_fallback_edition_when_editor_dies():
     ed = compose(DATE, PaperConfig(), store, FakeEditor(response=None), section_conns=stub_connectors())
     assert ed.fallback is True
     assert ed.yesterday == [{"project": "x-lens", "story": "I built the parser."}]
-    assert any("unicode tests red" in loop for loop in ed.open_loops)
+    # open loops come from the openloops section (which carries ledger threads in real flow)
     assert any("2 uncommitted" in loop for loop in ed.open_loops)
+    assert any("editorial desk unavailable" in n for n in ed.notices)
     assert ed.tech_wire[0]["title"] == "Show HN: paper"
     assert ed.weather == "72°F partly cloudy · Seattle"

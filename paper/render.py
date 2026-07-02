@@ -71,6 +71,14 @@ def render_edition(
 
     # ── Masthead ───────────────────────────────────────────────
     console.print()
+    ears = Table.grid(expand=True)
+    ears.add_column(justify="left")
+    ears.add_column(justify="right")
+    ears.add_row(
+        Text("“All the code that's fit to print.”", style="dim italic"),
+        Text("price: one coffee ☕", style="dim italic"),
+    )
+    console.print(ears)
     rule("═")
     console.print(Align.center(Text(spaced_caps(masthead), style="bold white")))
     dateline = Text(justify="center", style="grey62")
@@ -79,23 +87,22 @@ def render_edition(
         dateline.append(f" — {edition.weather}")
     console.print(dateline)
     rule("═")
-    ear = Table.grid(expand=True)
-    ear.add_column(justify="left")
-    ear.add_column(justify="right")
-    ear.add_row(
-        Text("THE MORNING EDITION", style="dim"),
-        Text("your day, printed daily", style="dim italic"),
-    )
-    console.print(ear)
+    console.print(Align.center(Text("LATE CITY FINAL — THE MORNING EDITION", style="dim")))
     console.print()
 
     # ── Front page ─────────────────────────────────────────────
     if edition.headline:
         console.print(Align.center(Text(edition.headline.upper(), style="bold")))
     if edition.lead:
-        console.print(Padding(Text(edition.lead, style="italic", justify="center"), (0, 10)))
+        lead = Text(style="italic", justify="full")
+        words = edition.lead.split(" ", 1)
+        lead.append(words[0].upper(), style="bold italic")  # small-caps opener
+        if len(words) > 1:
+            lead.append(" " + words[1])
+        console.print(Padding(lead, (0, 12)))
     if edition.fallback:
         console.print(Align.center(Text("· raw edition — the editorial desk is out ·", style="dim")))
+    console.print(Align.center(Text("❦", style="dim")))
     console.print()
 
     # ── Yesterday ──────────────────────────────────────────────
@@ -161,7 +168,7 @@ def render_edition(
     if edition.notices:
         console.print(Text("  " + "  ·  ".join(edition.notices), style="dim"))
     rule("═")
-    console.print(Align.center(Text(spaced_caps("end of edition"), style="dim")))
+    console.print(Align.center(Text(f"❦   {spaced_caps('end of edition')}   ❦", style="dim")))
     console.print()
 
 
