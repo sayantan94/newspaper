@@ -1,60 +1,150 @@
-# paper
+<h1 align="center">🗞️ paper</h1>
+<p align="center"><b>Wake up. Pour coffee. Read yesterday's you.</b></p>
 
-**Wake up. Pour coffee. Read yesterday's you.**
-
-`paper` is a personal morning newspaper for your terminal. Every morning it
-reads what you actually did yesterday — your Claude Code sessions, your Codex
-sessions, your git commits — and an AI editorial desk writes you a front page:
-where you left off, what's unfinished, what's happening in your world, and the
-three things worth doing today.
+`paper` is a personal newspaper for your terminal. It reads what you actually
+did — your Claude Code sessions, Codex sessions, and git commits — and an AI
+editorial desk writes you a front page: where you left off, what's unfinished,
+your inbox and calendar, the news that matters to your work, and the three
+things worth doing today.
 
 No manual journaling. No "what was I doing again?" Just run `paper`.
 
-```text
-“All the code that's fit to print.”                          price: one coffee ☕
-════════════════════════════════════════════════════════════════════════════════
-                          T H E   D A I L Y   Y O U
-Vol. I, No. 1 — Wednesday, July 1, 2026 — 59°F clear, 51–63°F, 1% rain · Seattle
-════════════════════════════════════════════════════════════════════════════════
-                      LATE CITY FINAL — THE MORNING EDITION
+<p align="center"><img src="docs/edition.svg" alt="a paper edition rendered in the terminal" width="920"></p>
 
-         AGENTIC PREP MARATHON LANDS; JOBS-CLI STALLS AT LINKEDIN'S GATE
-      YOU left off mid-scope on jobs-cli, staring at the one constraint
-      that decides the whole design: LinkedIn has no public jobs API and
-      scraping breaks their ToS. Behind you sits a finished monument —
-      the CAD-4/CAD-5 prep set, all committed to main. Today is two
-      clean, high-leverage decisions before any code.
-                                        ❦
-────────────────────────────────────────────────────────────────────────────────
-Y E S T E R D A Y   — where you left off
+## What's in your paper
 
-  AGENTICSYSDESIGN  —  You shipped a massive interview-prep set — CAD-4 with
-five dimension deep-dives, plus CAD-5 data-recovery and SSE+Redis Streams —
-landing it in one push to main (22dbb1e, 35 files, ~24.7k insertions).
-  JOBS-CLI  —  You opened a fresh project to automate a LinkedIn job search
-and hit the wall immediately: no official public jobs API.
+| Section | Where it comes from |
+|---|---|
+| **Headline & lead** | Written fresh by the editorial desk, grounded in your real work |
+| **Today's calendar** | Your Google Calendar (secret iCal URL — zero OAuth) |
+| **The mailbag** | Your unread Gmail (IMAP app password, kept in the Keychain) |
+| **Yesterday** | Your Claude Code + Codex sessions and git commits, auto-journaled |
+| **Open loops** | Dirty repos, unpushed commits, threads you left hanging |
+| **Tech wire** | Hacker News + your RSS feeds, annotated with *why it matters to you* |
+| **GitHub** | Notifications and PRs awaiting your review (`gh`) |
+| **The sports page** | ESPN headlines + scores for your leagues (or `"all"`) |
+| **The top three** | Concrete suggestions for today, from your open loops |
 
-────────────────────────────────────────────────────────────────────────────────
-O P E N   L O O P S   — the unfinished business desk
+The paper knows when you're reading: the same command prints **THE MORNING
+EDITION** at 8am and **THE LATE NIGHT EDITION** at 1am, written for that moment.
 
-  ◦ jobs-cli: decide the data-access strategy — this choice shapes the design
-  ◦ Culture interview (Round 6): prep is written but never rehearsed
-  ◦ Verify the draft in /tmp/cad5/part3.md actually merged — it may be orphaned
+## Quickstart
 
-                                                ╷
-   T E C H   W I R E                            │   G I T H U B
-╶───────────────────────────────────────────────┼──────────────────────────────╴
-   • Ask HN: Who is hiring? (July 2026)         │   • rowboat now at v0.6.1 —
-       167 pts — a clean, structured job feed   │     eight releases since
-       for jobs-cli — and live leads for your   │     v0.4.2
-       own search                               │
+Requires Python ≥ 3.11, [uv](https://docs.astral.sh/uv/), and the
+[Claude Code](https://claude.com/claude-code) or
+[Codex](https://github.com/openai/codex) CLI (driven headlessly — **no API keys**).
+
+```bash
+git clone https://github.com/sayantan94/newspaper && cd newspaper
+uv tool install --editable .
+paper              # names your paper, then backfills your journal (one-time, narrated)
+paper auth gmail   # optional: connect Gmail + Google Calendar
 ```
 
-That headline, that lead, those "why this matters to *you*" annotations on the
-news — all written fresh each morning by the editorial desk, grounded in your
-real work.
+First run takes a couple of minutes to journal your recent history. Every run
+after that is seconds — editions are cached for the day.
 
-## How it works
+## Commands
+
+| Command | What it does |
+|---|---|
+| `paper` | Today's edition (journals anything unprocessed first) |
+| `paper --refresh` | Refetch the world + rewrite the editorial |
+| `paper pdf` | **Print edition** — newspaper-styled PDF via headless Chrome |
+| `paper journal [date]` | Read your auto-built journal |
+| `paper 2026-06-30` | Re-read a past edition |
+| `paper ingest` | Update the journal only (cron-friendly) |
+| `paper auth gmail` | Connect Gmail + Calendar (Keychain, no OAuth consoles) |
+| `paper connectors` | Every connector and its status |
+| `paper config` | Show configuration |
+
+## The print edition
+
+`paper pdf` typesets the day's edition for actual paper:
+
+<p align="center"><img src="docs/print-edition.png" alt="the PDF print edition" width="680"></p>
+
+## Configuration
+
+`~/.paper/config.toml`, created on first run — see
+[config.example.toml](config.example.toml) for every option with comments:
+
+```toml
+masthead = "THE DAILY YOU"                    # your paper's name
+workspace_roots = ["~/Documents/Workspace"]   # where your repos live
+
+[technews]
+rss_feeds = []                                # your feeds join the tech wire
+
+[sports]
+leagues = ["all"]                             # or: nba, wnba, nfl, mlb, nhl, epl, ucl, mls
+
+[llm]
+engine = "claude"                             # or "codex" — whichever CLI you use
+```
+
+All state lives in `~/.paper/` (journal, editions, cache). Override with `$PAPER_HOME`.
+
+<details>
+<summary><b>Connecting Google (Gmail + Calendar) — step by step</b></summary>
+
+<br>One command, no Google Cloud project, no OAuth consent screens:
+
+```bash
+paper auth gmail
+```
+
+It asks for two things and stores both in your macOS Keychain.
+
+**0. Be in the right Google account** — the pages below act on whichever
+account is active; check the avatar top-right.
+
+**1. Turn on 2-Step Verification** (app passwords require it):
+<https://myaccount.google.com/signinoptions/twosv>
+
+**2. Create the app password:** go to
+<https://myaccount.google.com/apppasswords>, type `paper` as the app name,
+click **Create**, and copy the **16-character code** — it's shown only once.
+This is *not* your normal Gmail password.
+
+**3. Get the calendar URL:** <https://calendar.google.com> → gear → **Settings**
+→ your calendar in the left sidebar → **Integrate calendar** →
+**"Secret address in iCal format"**.
+
+**4. Run `paper auth gmail`** and paste both when prompted (spaces in the code
+are fine). It test-drives each before saving — a ✓ means it works.
+
+*Gotchas:* "Invalid credentials" = normal password used instead of an app
+password, or the app password was created under a different Google account
+than the address you typed. App passwords never appear under "linked apps" —
+that page only lists OAuth apps.
+
+</details>
+
+## Write your own connector
+
+Every source is a plugin. Drop a file in `~/.paper/connectors/` — no core
+changes, and a broken plugin can never take down the paper:
+
+```python
+# ~/.paper/connectors/stocks.py
+from paper.connectors.base import SectionConnector
+from paper.models import Section, SectionItem
+
+class StocksConnector(SectionConnector):
+    name = "stocks"
+    title = "MARKETS"
+
+    def fetch(self, ctx):  # ctx.recent_themes = what you're working on
+        return Section(name=self.name, title=self.title,
+                       items=[SectionItem(title="NVDA +2.1%")])
+```
+
+Subclass `WorkConnector` (`collect(date) -> list[Evidence]`) instead to feed
+the journal from a new source — Cursor, shell history, Slack, anything.
+
+<details>
+<summary><b>How it works</b></summary>
 
 ```
    your raw activity                      the outside world
@@ -77,192 +167,39 @@ real work.
               RENDER — terminal broadsheet · PDF
 ```
 
-Three properties worth knowing:
-
 - **It builds a real journal.** Each day is distilled once into a permanent
-  first-person record (`paper journal` to read it). Skip a weekend and Monday's
-  paper covers everything since Friday.
-- **Everything degrades gracefully.** No `gh`? That section hides with a hint.
-  A feed is down? One dim line in the colophon. LLM unreachable? You get the
-  raw-feed edition instead of an error.
-- **Editions are cached.** The first `paper` of the day does the work; every
-  rerun is instant.
+  first-person record. Skip a weekend and Monday's paper covers everything
+  since Friday.
+- **Everything degrades gracefully.** Missing tool → the section hides with a
+  hint. Dead feed → one dim line in the colophon. LLM unreachable → you get
+  the raw-feed edition, never an error.
+- **Editions are cached.** First `paper` of the day does the work; reruns are
+  instant. `paper ingest` in cron pre-bakes the slow part.
 
-## Install
+</details>
 
-You need Python ≥ 3.11, [uv](https://docs.astral.sh/uv/), and **either** the
-[Claude Code CLI](https://claude.com/claude-code) or the
-[Codex CLI](https://github.com/openai/codex) — `paper` drives them headlessly,
-so there are **no API keys to manage**.
+<details>
+<summary><b>Troubleshooting</b></summary>
 
-```bash
-git clone <this repo> && cd newspaper
-uv tool install --editable .
-paper        # first run: names your paper, sets your city, backfills your journal
-```
-
-The first run backfills up to 14 days of journal (a minute or two, narrated).
-Every morning after that is seconds.
-
-Optional: `gh` (GitHub section), `paper auth gmail` (inbox + calendar),
-Google Chrome (PDF printing).
-
-## The commands
-
-| Command | What it does |
-|---|---|
-| `paper` | Today's edition — ingests anything unprocessed, composes, prints |
-| `paper --refresh` | Refetch the world + rewrite the editorial |
-| `paper 2026-06-30` | Re-read a past edition |
-| `paper pdf` | Newspaper-styled **PDF print edition** (opens it, ready for real paper) |
-| `paper journal` | Yesterday's journal entry (`paper journal 2026-06-28` for any day) |
-| `paper ingest` | Update the journal only — cron-friendly |
-| `paper connectors` | Every connector and its status |
-| `paper auth gmail` | Connect your inbox (IMAP app password → macOS Keychain) |
-| `paper config` | Show configuration |
-| `paper --plain` | Markdown-ish plain text (automatic when piping) |
-
-## Choosing your engine: Claude or Codex
-
-The writing is done by whichever agent CLI you already use, in headless mode:
-
-```toml
-# ~/.paper/config.toml
-[llm]
-engine = "claude"   # claude -p --output-format json
-# or
-engine = "codex"    # codex exec -s read-only (sandboxed, read-only)
-
-model = ""          # optional override, e.g. "claude-sonnet-5" or "o5"
-```
-
-Both engines read your work through the same connectors — Claude Code *and*
-Codex sessions feed the journal regardless of which engine writes the paper.
-
-## Configuration
-
-`~/.paper/config.toml`, created interactively on first run
-(see [config.example.toml](config.example.toml) for the annotated version):
-
-```toml
-masthead = "THE DAILY YOU"                    # your paper's name — make it yours
-workspace_roots = ["~/Documents/Workspace"]   # where your repos live
-lookback_days = 14                            # journal backfill horizon
-markdown_mirror = ""                          # optional: Obsidian folder for journal copies
-
-[connectors]
-disabled = []                                 # e.g. ["calendar"]
-
-[technews]
-rss_feeds = []                                # your feeds join the tech wire
-hn_count = 15
-
-[sports]
-leagues = ["all"]                             # or pick: nba, wnba, nfl, mlb, nhl, epl, ucl, mls
-
-[gmail]
-address = ""                                  # set via `paper auth gmail`
-
-[calendar]
-ics_url = ""                                  # Google Calendar's secret iCal address (zero OAuth)
-
-[weather]
-location = "Seattle"
-```
-
-### Connecting your Google account (Gmail + Calendar)
-
-One command, no Google Cloud project, no OAuth consent screens, no extra tools:
-
-```bash
-paper auth gmail
-```
-
-It asks for two things and stores both in your macOS Keychain: a Gmail **app
-password** (powers **THE MAILBAG**) and your calendar's **secret iCal address**
-(powers **TODAY'S CALENDAR**). Here's the full walkthrough:
-
-**1. Be in the right Google account.** The settings pages below act on
-whichever account is active — check the avatar in the top-right corner and
-switch first if you use multiple accounts.
-
-**2. Turn on 2-Step Verification** (app passwords don't exist without it):
-go to <https://myaccount.google.com/signinoptions/twosv>, click **Turn on
-2-Step Verification**, and finish the prompts. Already on? Skip ahead.
-
-**3. Create the app password:** go to
-<https://myaccount.google.com/apppasswords> (it may ask you to sign in again),
-type `paper` in the **App name** box, click **Create**, and copy the
-**16-character code** from the yellow box — it's shown only once.
-This is *not* your normal Gmail password; Google rejects normal passwords
-over IMAP.
-
-**4. Get the calendar URL:** open <https://calendar.google.com> → gear icon →
-**Settings** → click your calendar in the left sidebar → **Integrate
-calendar** → copy **"Secret address in iCal format"**.
-
-**4. Run `paper auth gmail`** — enter your address, paste the 16-character
-code at the hidden prompt (spaces are fine, they're stripped), then paste the
-calendar URL. It test-drives both before saving anything, so a ✓ means it
-works. Then `paper --refresh` to see both sections live.
-
-Gotchas: "Invalid credentials" means a normal password was used instead of an
-app password, or the app password was created under a *different* Google
-account than the address you typed (the multi-account trap). The app password
-will never appear under "linked apps / third-party connections" — that page
-only lists OAuth apps; yours lives at the App passwords page.
-
-All state lives under `~/.paper/` (override with `$PAPER_HOME`):
-`ledger/` (your journal), `editions/` (each day's paper + HTML + PDF),
-`cache/`, `connectors/` (your plugins).
-
-## Write your own connector
-
-Every source is a plugin. Drop a file in `~/.paper/connectors/` — no core
-changes, and a broken plugin can never take down the paper:
-
-```python
-# ~/.paper/connectors/stocks.py — a new section
-from paper.connectors.base import SectionConnector
-from paper.models import Section, SectionItem
-
-class StocksConnector(SectionConnector):
-    name = "stocks"
-    title = "MARKETS"
-
-    def fetch(self, ctx):
-        # ctx.recent_themes tells you what the reader is working on
-        return Section(name=self.name, title=self.title,
-                       items=[SectionItem(title="NVDA +2.1%")])
-```
-
-To feed the **journal** from a new source (Cursor, shell history, Slack…),
-subclass `WorkConnector` instead and implement `collect(date) -> list[Evidence]`.
-
-## Automate the morning
-
-The paper builds itself on demand, but you can pre-bake the slow part so the
-first `paper` of the day is instant:
-
-```cron
-30 6 * * * PATH=$HOME/.local/bin:$PATH paper ingest
-```
-
-## Troubleshooting
+<br>
 
 | Symptom | Fix |
 |---|---|
-| "editorial desk unavailable" in the colophon | The engine timed out or isn't authed — check `claude -p "hi"` (or `codex exec "hi"`), then `paper --refresh` |
-| A section is missing | `paper connectors` shows why (usually a missing CLI + install hint) |
+| "editorial desk unavailable" in the colophon | Engine timed out or isn't authed — check `claude -p "hi"` (or `codex exec "hi"`), then `paper --refresh` |
+| A section is missing | `paper connectors` shows why, with an install hint |
+| Gmail "Invalid credentials" | Use an app password, not your normal password — see the Google section above |
 | Wrong city weather | Edit `[weather] location` in `~/.paper/config.toml` |
-| Want a different name on the masthead | Edit `masthead`, or delete `~/.paper/config.toml` and run `paper` to be asked again |
-| PDF says Chrome not found | Install Chrome/Chromium, or open the `.html` it printed and ⌘P |
+| Rename the masthead | Edit `masthead`, or delete `~/.paper/config.toml` and run `paper` to be asked again |
+| PDF says Chrome not found | Install Chrome, or open the `.html` it printed and ⌘P |
+
+</details>
 
 ## Development
 
 ```bash
-uv sync && uv run pytest        # 58 tests, no network required
+uv sync && uv run pytest      # 66 tests, no network needed
+uv run python docs/make_images.py   # regenerate the README images
 ```
 
-The design doc lives in [`docs/superpowers/specs/`](docs/superpowers/specs/),
-the implementation plan in [`docs/superpowers/plans/`](docs/superpowers/plans/).
+Design doc: [`docs/superpowers/specs/`](docs/superpowers/specs/) ·
+Implementation plan: [`docs/superpowers/plans/`](docs/superpowers/plans/)
